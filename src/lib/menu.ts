@@ -4,8 +4,8 @@ import FastSync from "../main";
 
 
 export const AddRibbonIcon = async function (plugin: FastSync) {
-  clearInterval(plugin.ribbonIconInterval)
-  plugin.ribbonIconInterval = setInterval(() => {
+  window.clearInterval(plugin.ribbonIconInterval)
+  plugin.ribbonIconInterval = window.setInterval(() => {
     if (plugin.websocket.isOpen != true) {
       if (plugin.ribbonIconStatus && plugin.ribbonIcon) {
         plugin.ribbonIcon.remove()

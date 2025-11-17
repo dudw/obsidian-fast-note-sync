@@ -78,12 +78,11 @@ export class SettingTab extends PluginSettingTab {
       .setHeading()
       .setClass("fast-note-sync-settings-tag")
 
-    const root2 = document.createElement("div")
-    root2.className = "fast-note-sync-settings"
-    set.appendChild(root2)
+    const apiSet = set.createDiv()
+    apiSet.addClass("fast-note-sync-settings")
 
-    const reactRoot2 = createRoot(root2)
-    reactRoot2.render(<SettingsView plugin={this.plugin} />)
+    const apiSetReact = createRoot(apiSet)
+    apiSetReact.render(<SettingsView plugin={this.plugin} />)
 
     const api = new Setting(set)
       .setName($("远端服务地址"))
@@ -137,14 +136,14 @@ export class SettingTab extends PluginSettingTab {
     let y = new Setting(set)
       .setName($("捐赠"))
       .setDesc($("如果您喜欢这个插件，请考虑捐赠以支持继续开发。"))
+      .setClass("fast-note-sync-settings-support")
       .settingEl.createEl("a", { href: "https://ko-fi.com/haierkeys" })
       .createEl("img", {
-        attr: { src: KofiImage, height: "36", border: "0", alt: "Buy Me a Coffee at ko-fi.com", style: "height:36px!important;border:0px!important;" },
+        attr: { src: KofiImage, height: "36", border: "0", alt: "Buy Me a Coffee at ko-fi.com", class: "ko-fi-logo" },
       })
 
     const debugDiv = set.createDiv()
-    debugDiv.setAttr("align", "center")
-    debugDiv.setAttr("style", "margin: var(--size-4-2)")
+    debugDiv.addClass("fast-note-sync-settings-debug")
 
     const debugButton = debugDiv.createEl("button")
     debugButton.setText($("复制 Debug 信息"))
@@ -163,12 +162,10 @@ export class SettingTab extends PluginSettingTab {
     }
 
     if (Platform.isDesktopApp) {
-      const info = set.createDiv()
-      info.setAttr("align", "center")
+      const info = debugDiv.createDiv()
       info.setText($("通过快捷键打开控制台，你可以看到这个插件和其他插件的日志"))
 
-      const keys = set.createDiv()
-      keys.setAttr("align", "center")
+      const keys = debugDiv.createDiv()
       keys.addClass("custom-shortcuts")
       if (Platform.isMacOS === true) {
         keys.createEl("kbd", { text: "CMD (⌘) + OPTION (⌥) + I" })

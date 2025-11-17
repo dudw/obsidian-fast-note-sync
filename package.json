@@ -1,11 +1,11 @@
 {
   "name": "Fast Note Sync",
-  "version": "0.5.1",
-  "description": "Can be privately deployed, focused on providing users with undisturbed, silky smooth, multi-end real-time synchronization note synchronization plugin, supporting Mac, Windows, Android, iOS and other platforms, and providing multi-language support.",
+  "version": "0.6.9",
+  "description": "can be privately deployed, focusing on providing Obsidian users with an undisturbed, silky smooth, multi-end real-time synchronization note synchronization function, supporting platforms such as Mac, Windows, Android, iOS, and offering multi-language support.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
-    "devcss": "sass --watch src/styles.scss styles.css",
+    "devcss": "sass --watch src/styles.scss styles.css && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"
   },
   "keywords": [],

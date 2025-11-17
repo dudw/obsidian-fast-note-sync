@@ -1,6 +1,6 @@
 import { Plugin } from "obsidian";
 
-import { NoteModify, NoteDelete, FileRename, FileContentModify, OverrideRemoteAllFiles, SyncAllFiles } from "./lib/fs";
+import { NoteModify, NoteDelete, NoteRename, OverrideRemoteAllFiles, SyncAllFiles } from "./lib/fs";
 import { SettingTab, PluginSettings, DEFAULT_SETTINGS } from "./setting";
 import { WebSocketClient } from "./lib/websocket";
 import { AddRibbonIcon } from "./lib/menu";
@@ -12,7 +12,7 @@ interface SyncSkipFiles {
   [key: string]: string
 }
 interface EditorChangeTimeout {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export default class FastSync extends Plugin {
@@ -28,7 +28,7 @@ export default class FastSync extends Plugin {
   editorChangeTimeout: EditorChangeTimeout = {}
 
   ribbonIcon: HTMLElement
-  ribbonIconInterval: any
+  ribbonIconInterval: number
   ribbonIconStatus: boolean = false
 
 
@@ -52,7 +52,7 @@ export default class FastSync extends Plugin {
     this.registerEvent(this.app.vault.on("create", (file) => NoteModify(file, this)))
     this.registerEvent(this.app.vault.on("modify", (file) => NoteModify(file, this)))
     this.registerEvent(this.app.vault.on("delete", (file) => NoteDelete(file, this)))
-    this.registerEvent(this.app.vault.on("rename", (file, oldfile) => FileRename(file, oldfile, this)))
+    this.registerEvent(this.app.vault.on("rename", (file, oldfile) => NoteRename(file, oldfile, this)))
 
     // 注册编译器事件 // 不监听编辑器内容变化 因为 存在缓存 导致mtime 不准确
     // this.registerEvent(
@@ -92,7 +92,7 @@ export default class FastSync extends Plugin {
   onunload() {
     // 取消注册文件事件
     this.websocket.isSyncAllFilesInProgress = false
-    clearInterval(this.ribbonIconInterval)
+    window.clearInterval(this.ribbonIconInterval)
     this.websocket.unRegister()
   }
 
