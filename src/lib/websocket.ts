@@ -23,7 +23,7 @@ export class WebSocketClient {
   //同步全部文件时设置
   public isSyncAllFilesInProgress: boolean = false
   public isRegister: boolean = false
-  private messageQueue: { action: string; data: unknown; type: string }[] = []
+  private messageQueue: { action: string; data: object | string }[] = []
   private onStatusChange?: (status: boolean) => void
 
   constructor(plugin: FastSync) {
@@ -148,26 +148,26 @@ export class WebSocketClient {
     }, CONNECTION_CHECK_INTERVAL)
   }
 
-  public MsgSend(action: string, data: unknown, type: string = "text", isSync: boolean = false) {
+  public MsgSend(action: string, data: object | string, isSync: boolean = false) {
     if (!this.isAuth || (this.isSyncAllFilesInProgress && !isSync)) {
       dump(`Service not ready or sync in progress, queuing message: ${action}`)
-      this.messageQueue.push({ action, data, type })
+      this.messageQueue.push({ action, data })
       return
     }
-    this.Send(action, data, type)
+    this.Send(action, data)
   }
 
-  public Send(action: string, data: unknown, type: string = "text") {
+  public Send(action: string, data: object | string) {
     if (this.ws.readyState !== WebSocket.OPEN) {
       dump(`Service not connected, queuing message: ${action}`)
-      this.messageQueue.push({ action, data, type })
+      this.messageQueue.push({ action, data })
       return
     }
 
     dump(`Sending message: ${action}`)
-    if (type == "text") {
+    if (typeof data === "string") {
       this.ws.send(action + "|" + data)
-    } else if (type == "json") {
+    } else {
       this.ws.send(action + "|" + JSON.stringify(data))
     }
   }
@@ -180,7 +180,7 @@ export class WebSocketClient {
       const msg = this.messageQueue.shift()
       dump(`Flushing message: `, msg)
       if (msg) {
-        this.Send(msg.action, msg.data, msg.type)
+        this.Send(msg.action, msg.data)
       }
     }
   }

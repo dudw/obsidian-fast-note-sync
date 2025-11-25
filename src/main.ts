@@ -61,13 +61,13 @@ export default class FastSync extends Plugin {
     this.addCommand({
       id: "init-all-files",
       name: $("同步全部笔记(覆盖远端)"),
-      callback: async () => OverrideRemoteAllFiles(this),
+      callback: async () => await OverrideRemoteAllFiles(this),
     })
 
     this.addCommand({
       id: "sync-all-files",
       name: $("同步全部笔记"),
-      callback: async () => SyncAllFiles(this),
+      callback: async () => await SyncAllFiles(this),
     })
   }
 

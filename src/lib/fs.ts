@@ -30,7 +30,7 @@ export const NoteModify = async function (file: TAbstractFile, plugin: FastSync)
     content: content,
     contentHash: contentHash,
   }
-  plugin.websocket.MsgSend("NoteModify", data, "json")
+  await plugin.websocket.MsgSend("NoteModify", data)
   plugin.syncSkipFiles[file.path] = data.contentHash
 
   dump(`Note modify send`, data.path, data.contentHash, data.mtime, data.pathHash)
@@ -46,7 +46,7 @@ export const NoteDelete = async function (file: TAbstractFile, plugin: FastSync)
     delete plugin.syncSkipDelFiles[file.path]
     return
   }
-  NoteDeleteByPath(file.path, plugin)
+  await NoteDeleteByPath(file.path, plugin)
   dump(`Note delete send`, file.path)
 }
 
@@ -55,8 +55,8 @@ export const NoteRename = async function (file: TAbstractFile, oldfile: string, 
   if (!(file instanceof TFile)) {
     return
   }
-  NoteDeleteByPath(oldfile, plugin)
-  NoteModify(file, plugin)
+  await NoteDeleteByPath(oldfile, plugin)
+  await NoteModify(file, plugin)
   dump(`Note rename send`, file, oldfile)
 }
 
@@ -83,7 +83,7 @@ export const NoteContentModify = async function (file: TAbstractFile, content: s
     content: content,
     contentHash: hashContent(content),
   }
-  plugin.websocket.MsgSend("NoteContentModify", data, "json")
+  await plugin.websocket.MsgSend("NoteContentModify", data)
   plugin.syncSkipFiles[file.path] = data.contentHash
 
   dump(`Note content modify send`, data.path, data.contentHash, data.mtime, data.pathHash)
@@ -97,7 +97,7 @@ export const NoteDeleteByPath = async function (path: string, plugin: FastSync) 
     path: path,
     pathHash: hashContent(path),
   }
-  plugin.websocket.MsgSend("NoteDelete", data, "json")
+  await plugin.websocket.MsgSend("NoteDelete", data)
 }
 
 
@@ -126,7 +126,7 @@ export async function overrideRemoteAllFilesImpl(plugin: FastSync): Promise<void
   }
   plugin.settings.lastSyncTime = 0
   await plugin.saveData(plugin.settings)
-  NoteSync(plugin, localNotes)
+  await NoteSync(plugin, localNotes)
 }
 
 // 同步包装：供 addCommand 使用，返回 void（命令回调类型安全）
@@ -154,7 +154,7 @@ export async function syncAllFilesImpl(plugin: FastSync): Promise<void> {
     await sleep(2000) // 每隔两秒重试一次
   }
   const localNotes: NoteSyncCheck[] = []
-  const files = await plugin.app.vault.getMarkdownFiles()
+  const files = plugin.app.vault.getMarkdownFiles()
   for (const file of files) {
     const content: string = await plugin.app.vault.cachedRead(file)
     localNotes.push({
@@ -166,7 +166,7 @@ export async function syncAllFilesImpl(plugin: FastSync): Promise<void> {
   }
   plugin.settings.lastSyncTime = 0
   await plugin.saveData(plugin.settings)
-  NoteSync(plugin, localNotes)
+  await NoteSync(plugin, localNotes)
 }
 
 // 同步包装：供 addCommand 使用，返回 void（命令回调类型安全）
@@ -192,7 +192,7 @@ export const NoteSync = async function (plugin: FastSync, notes: NoteSyncCheck[]
     lastTime: Number(plugin.settings.lastSyncTime),
     notes: notes
   }
-  plugin.websocket.MsgSend("NoteSync", data, "json")
+  await plugin.websocket.MsgSend("NoteSync", data)
   dump("Notesync", data)
   plugin.websocket.isSyncAllFilesInProgress = true
 }
@@ -235,7 +235,7 @@ export const ReceiveNoteSyncModify = async function (data: ReceiveData, plugin: 
   } else {
     const folder = data.path.split("/").slice(0, -1).join("/")
     if (folder != "") {
-      const dirExists = await plugin.app.vault.getFolderByPath(folder)
+      const dirExists = plugin.app.vault.getFolderByPath(folder)
       if (dirExists == null) await plugin.app.vault.createFolder(folder)
     }
     plugin.syncSkipFiles[data.path] = data.contentHash
@@ -249,7 +249,7 @@ export const ReceiveNoteSyncNeedPush = async function (data: ReceiveCheckData, p
   const file = plugin.app.vault.getFileByPath(data.path)
   if (file) {
     delete plugin.syncSkipFiles[file.path]
-    NoteModify(file, plugin)
+    await NoteModify(file, plugin)
   }
 }
 
@@ -270,7 +270,7 @@ export const ReceiveNoteSyncDelete = async function (data: ReceiveData, plugin: 
   const file = plugin.app.vault.getFileByPath(data.path)
   if (file instanceof TFile) {
     plugin.syncSkipDelFiles[data.path] = "{ReceiveNoteSyncDelete}"
-    plugin.app.vault.delete(file)
+    await plugin.app.vault.delete(file)
     //await plugin.app.vault.delete(file)s
   }
 }
@@ -281,7 +281,7 @@ export const ReceiveNoteSyncEnd = async function (data: ReceiveData, plugin: Fas
   plugin.settings.lastSyncTime = data.lastTime
   await plugin.saveData(plugin.settings)
   plugin.websocket.isSyncAllFilesInProgress = false
-  plugin.websocket.FlushQueue()
+  await plugin.websocket.FlushQueue()
 }
 
 type ReceiveSyncMethod = (data: unknown, plugin: FastSync) => void

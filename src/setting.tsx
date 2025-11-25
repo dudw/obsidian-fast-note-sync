@@ -179,9 +179,9 @@ export class SettingTab extends PluginSettingTab {
       const keys = debugDiv.createDiv()
       keys.addClass("custom-shortcuts")
       if (Platform.isMacOS === true) {
-        keys.createEl("kbd", { text: "CMD (⌘) + OPTION (⌥) + I" })
+        keys.createEl("kbd", { text: "Cmd (⌘) + Option (⌥) + I" })
       } else {
-        keys.createEl("kbd", { text: "CTRL + SHIFT + I" })
+        keys.createEl("kbd", { text: "Ctrl + Shift + I" })
       }
     }
   }

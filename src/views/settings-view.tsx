@@ -1,3 +1,4 @@
+import { dump } from "src/lib/helps";
 import { useState } from "react";
 import FastSync from "src/main";
 
@@ -44,9 +45,7 @@ async function getClipboardContent(plugin: FastSync): Promise<void> {
     const text = await navigator.clipboard.readText()
 
     // 检查是否为 JSON 格式
-    let parsedData: any
-
-    parsedData = JSON.parse(text)
+    let parsedData = JSON.parse(text)
 
     // 检查是否为对象且包含 api 和 apiToken
     if (typeof parsedData === "object" && parsedData !== null) {
@@ -66,6 +65,8 @@ async function getClipboardContent(plugin: FastSync): Promise<void> {
     return
   }
 }
+
+const handleClipboardClick = (plugin: FastSync) => { getClipboardContent(plugin).catch(err => { dump(err); }); };
 
 export const SettingsView = ({ plugin }: { plugin: FastSync }) => {
   return (
@@ -98,7 +99,7 @@ export const SettingsView = ({ plugin }: { plugin: FastSync }) => {
         </table>
       </div>
       <div className="clipboard-read">
-        <button className="clipboard-read-button" onClick={() => getClipboardContent(plugin)}>
+        <button className="clipboard-read-button" onClick={() => handleClipboardClick(plugin)}>
           {$("粘贴的远端配置")}
         </button>
         <div className="clipboard-read-description">{plugin.clipboardReadTip}</div>

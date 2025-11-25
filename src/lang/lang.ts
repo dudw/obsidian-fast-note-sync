@@ -34,7 +34,7 @@ import { moment } from "obsidian";
 
 
 export interface lang {
-    [propName: string]: any;
+    [propName: string]: string;
 }
 
 export const localeMap: { [k: string]: Partial<typeof en> } = {
@@ -75,10 +75,25 @@ export const localeMap: { [k: string]: Partial<typeof en> } = {
 const locale = localeMap[moment.locale()];
 
 // https://stackoverflow.com/a/41015840/
+// function interpolate(str: string, params: Record<string, unknown>): string {
+//     const names: string[] = Object.keys(params);
+//     const vals: unknown[] = Object.values(params);
+//     return new Function(...names, `return \`${str}\`;`)(...vals);
+// }
+
 function interpolate(str: string, params: Record<string, unknown>): string {
-    const names: string[] = Object.keys(params);
-    const vals: unknown[] = Object.values(params);
-    return new Function(...names, `return \`${str}\`;`)(...vals);
+    return str.replace(/\$\{([^}]+)\}/g, (_, key) => {
+        // trim key 以支持 ${ key } 的写法
+        const k = key.trim();
+        // 如果参数不存在，这里返回空字符串或保留原占位符，视需要而定
+        if (Object.prototype.hasOwnProperty.call(params, k)) {
+            const val = params[k];
+            // 将 null/undefined 转为空字符串，其他类型转为字符串
+            return val == null ? "" : String(val);
+        }
+        // 如果未找到键，保留占位符（或返回空字符串/抛错）
+        return "";
+    });
 }
 
 export function $(str: keyof typeof en, params?: Record<string, unknown>): string {
