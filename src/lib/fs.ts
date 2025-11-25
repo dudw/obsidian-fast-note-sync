@@ -37,7 +37,7 @@ export const NoteModify = async function (file: TAbstractFile, plugin: FastSync)
 }
 
 
-export const NoteDelete = async function (file: TAbstractFile, plugin: FastSync) {
+export const NoteDelete = function (file: TAbstractFile, plugin: FastSync) {
   if (!file.path.endsWith(".md")) return
   if (!(file instanceof TFile)) {
     return

@@ -33,9 +33,11 @@ import ar from "src/lang/locale/ar";
 import { moment } from "obsidian";
 
 
-export interface lang {
-    [propName: string]: string;
-}
+/**
+ * Locale object type.
+ * 假设每个 locale 文件都是键 => 字符串（常见情形），使用更严格的类型。
+ */
+export interface LangMap extends Record<string, string> { }
 
 export const localeMap: { [k: string]: Partial<typeof en> } = {
     ar,
@@ -72,82 +74,64 @@ export const localeMap: { [k: string]: Partial<typeof en> } = {
     "zh-tw": zhTW,
 };
 
-const locale = localeMap[moment.locale()];
+const locale = localeMap[moment.locale()] as Partial<LangMap> | undefined;
 
-// https://stackoverflow.com/a/41015840/
-// function interpolate(str: string, params: Record<string, unknown>): string {
-//     const names: string[] = Object.keys(params);
-//     const vals: unknown[] = Object.values(params);
-//     return new Function(...names, `return \`${str}\`;`)(...vals);
-// }
 
-type InterpolateOptions = {
-    // 当值为对象/数组时是否使用 JSON.stringify，否则使用 String(val)
-    serializeObjects?: boolean;
-    // 当对象序列化失败时返回的占位符
-    fallbackForObject?: string;
-    // 未找到键时是否保留原占位符（true）或返回空字符串（false）
-    preserveUnmatched?: boolean;
-    // 当值是函数时是否调用函数（并使用其返回值），否则使用 String(val)
-    callFunction?: boolean;
-};
+function getValueFromPath(root: Record<string, unknown>, path: string): unknown {
+    const normalized = path
+        .replace(/\[(?:'([^']*)'|"([^"]*)"|([^'\]"[\]]+))\]/g, (_m, g1, g2, g3) => {
+            const key = g1 ?? g2 ?? g3;
+            return "." + key;
+        })
+        .replace(/^\./, "");
 
-function interpolate(
-    str: string,
-    params: Record<string, unknown>,
-    opts: InterpolateOptions = {}
-): string {
-    const {
-        serializeObjects = true,
-        fallbackForObject = "[Object]",
-        preserveUnmatched = false,
-        callFunction = false,
-    } = opts;
+    if (normalized === "") return undefined;
 
-    return str.replace(/\$\{([^}]+)\}/g, (match, key) => {
-        const k = key.trim();
-        if (!Object.prototype.hasOwnProperty.call(params, k)) {
-            return preserveUnmatched ? match : "";
+    const parts = normalized.split(".");
+    let cur: unknown = root;
+    for (const part of parts) {
+        if (cur == null) return undefined;
+        if (part === "") return undefined;
+        if (typeof cur === "object") {
+            cur = (cur as Record<string, unknown>)[part];
+        } else {
+            return undefined;
         }
+    }
+    return cur;
+}
 
-        const val = params[k];
-        if (val == null) return "";
 
-        const t = typeof val;
-        if (t === "object") {
-            if (!serializeObjects) return String(val);
-            try {
-                return JSON.stringify(val);
-            } catch {
-                return fallbackForObject;
-            }
+function interpolate(str: string, params: Record<string, unknown>): string {
+    if (!str || typeof str !== "string") return String(str ?? "");
+    return str.replace(/\$\{([^}]+)\}/g, (_match, expression) => {
+        const path = expression.trim();
+        if (!/^[A-Za-z0-9_\.\[\]'"\s-]+$/.test(path)) {
+            return "";
         }
-
-        if (t === "function") {
-            if (callFunction) {
-                try {
-                    // @ts-ignore allow calling unknown function
-                    const res = (val as Function)();
-                    return res == null ? "" : String(res);
-                } catch {
-                    return "";
-                }
-            }
+        const val = getValueFromPath(params, path);
+        if (val === undefined || val === null) return "";
+        if (typeof val === "string") return val;
+        if (typeof val === "number" || typeof val === "boolean" || typeof val === "bigint") {
             return String(val);
         }
-
-        if (t === "symbol") {
-            return String(val);
+        try {
+            return JSON.stringify(val);
+        } catch {
+            return "";
         }
-
-        return String(val);
     });
 }
 
 
-export function $(str: keyof typeof en, params?: Record<string, unknown>): string {
-
-    const result = (locale && locale[str]) || en[str];
+export function $(
+    str: Extract<keyof typeof en, string>,
+    params?: Record<string, unknown>
+): string {
+    // str 的类型现在必为 string，安全用于索引
+    const key = str as string;
+    const fallback = en[key];
+    const result = (locale && (locale[key] as string | undefined)) ?? fallback;
 
     if (params) {
         return interpolate(result, params);
