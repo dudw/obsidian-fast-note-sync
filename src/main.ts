@@ -70,7 +70,6 @@ export default class FastSync extends Plugin {
     } else {
       this.websocket.unRegister()
       this.ignoredFiles = new Set()
-      var test = 2
     }
 
     // 注册文件事件
