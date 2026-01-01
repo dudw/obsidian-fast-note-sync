@@ -37,13 +37,13 @@
     > ⚠️ **注意**：需要 v1.4+，服務端 v1.0+。目前還在測試階段，請謹慎使用。
 - **服務端版本查看**： 顯示服務器的版本信息，方便了解服務器的版本狀態。
 - **多端同步**：支持 Mac、Windows、Android、iOS 等平台。
-- **筆記歷史**：提供筆記歷史功能，您可以透過插件端、服務端WebGui，查看筆記的所有歷史修改版本， 您可以查看修改詳情或者複製歷史版本內容。
+- **筆記歷史**：提供筆记歷史功能，您可以透過插件端、服務端WebGui，查看筆記的所有歷史修改版本， 您可以查看修改詳情或者複製歷史版本内容。
 
 ## 🗺️ 路線圖 (Roadmap)
 
 我們正在持續改進，以下是未來的開發計劃：
 
-- [ ] **離線設備筆記衝突優化**：對離線設備的筆記修改，增加衝突解決策略，避免因只保留最新更新，導致的筆記內容丟失。
+- [ ] **離線設備筆記衝突優化**：對離線設備的筆記修改，增加衝突解決策略，避免因只保留最新更新，導致的筆記內容遺失。
 - [ ] **雲存儲備份狀態**：隨時查看雲存儲備份狀態功能，方便你了解最新的雲存儲備份狀態。
 - [ ] **筆記分享功能**：為您的雲端筆記生成分享鏈接，方便您將自己成果分享給他人。
 - [ ] **AI筆記**：探索 AI+ 筆記相關的創新玩法， 等待您提供寶貴的建議。
@@ -53,15 +53,17 @@
 ## 💰 價格
 
 - 如果覺得這個插件很有用，並且想要支持它的繼續開發，你可以在這裡支持我:
-[<img src="https://cdn.ko-fi.com/cdn/kofi3.png?v=3" alt="BuyMeACoffee" width="100">](https://ko-fi.com/haierkeys)
 
+  | Ko-fi *非中國地區*  |  | 支付寶掃碼打賞 *中國地區* |
+  | --- | ---| --- |
+  | [<img src="https://ik.imagekit.io/haierkeys/kofi.png" alt="BuyMeACoffee" height="150">](https://ko-fi.com/haierkeys) | 或 | <img src="https://ik.imagekit.io/haierkeys/wxds.png" height="150"> |
 
 ## 🚀 快速開始
 
-1. 安裝插件 (二选一)
+1. 安裝插件 (二選一)
    - **官方商店**: <s>打開 Obsidian 社群插件市場, 搜索 **Fast Note Sync** 安裝</s>
         > ⚠️ 插件尚未上架官方商店,無法搜索, 請手動安裝
-   - **手動安裝**: 訪問 https://github.com/haierkeys/obsidian-fast-note-sync/releases 下載安裝包, 解壓到 Obsidian 插件目錄下 **.obsidian/plugins**
+   - **手動安裝**: 訪問 https://github.com/haierkeys/obsidian-fast-note-sync/releases 下载安裝包, 解壓到 Obsidian 插件目錄下 **.obsidian/plugins**
 2. 打開插件配置項，點擊 **貼上遠端配置** 按鈕，將遠端服務配置貼上到輸入框中。
 
 

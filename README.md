@@ -13,9 +13,9 @@
 
 
 <p align="center">
-  <strong>Fast, stable, efficient, and deploy-anywhere Obsidian note synchronization & backup plugin.</strong>
+  <strong>Fast, stable, efficient, and deploy-anywhere Obsidian note synchronization & backup plugin</strong>
   <br>
-  <em>Supports private deployment, dedicated to providing Obsidian users with an unobtrusive, silky smooth, real-time multi-device synchronization and backup experience. Supports Mac, Windows, Android, iOS, and provides multi-language support.</em>
+  <em>Privately deployable, focused on providing Obsidian users with an unobtrusive, silky smooth, real-time multi-device synchronization and backup experience. Supports Mac, Windows, Android, iOS, and provides multi-language support.</em>
 </p>
 
 <p align="center">
@@ -53,8 +53,10 @@ We are continuously improving. Here is the future development plan:
 ## 💰 Pricing
 
 - If you find this plugin useful and want to support its continued development, you can support me here:
-[<img src="https://cdn.ko-fi.com/cdn/kofi3.png?v=3" alt="BuyMeACoffee" width="100">](https://ko-fi.com/haierkeys)
 
+  | Ko-fi *Non-Mainland China*  |  | Alipay *Mainland China* |
+  | --- | ---| --- |
+  | [<img src="https://ik.imagekit.io/haierkeys/kofi.png" alt="BuyMeACoffee" height="150">](https://ko-fi.com/haierkeys) | or | <img src="https://ik.imagekit.io/haierkeys/wxds.png" height="150"> |
 
 ## 🚀 Quick Start
 
