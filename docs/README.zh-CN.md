@@ -24,7 +24,8 @@
 </p>
 
 <p align="center">
-  需配合独立服务端使用：<a href="/haierkeys/fast-note-sync-service">Fast Note Sync Service</a>
+  需配合独立服务端使用：
+  [Fast Note Sync Service](/haierkeys/fast-note-sync-service)
 </p>
 
 <div align="center">
