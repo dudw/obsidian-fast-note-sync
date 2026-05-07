@@ -1,6 +1,6 @@
 import { requestUrl } from "obsidian";
 
-import { hashContent, addRandomParam, showSyncNotice } from "./helps";
+import { hashContent, addRandomParam, showSyncNotice, dump } from "./helps";
 import type FastSync from "../main";
 
 
@@ -87,13 +87,9 @@ export class HttpApiService {
             const res = await fetch(probeUrl, {
                 method: 'GET',
                 redirect: 'follow',
-                headers: {
-                    "x-client": "ObsidianPlugin",
-                    "x-client-name": encodeURIComponent(this.plugin.getClientName()),
-                    "x-client-version": this.plugin.manifest.version || ""
-                }
             });
             if (res.url) {
+                console.log("probeApiRedirect", res.url);
                 const healthIndex = res.url.indexOf("/api/health");
                 if (healthIndex !== -1) {
                     const newBase = res.url.substring(0, healthIndex).replace(/\/+$/, "");
@@ -102,7 +98,7 @@ export class HttpApiService {
                     this.plugin.updateRuntimeApi(base);
                 }
             }
-            
+
             // 进一步校验业务状态码 (若返回的是 JSON)
             try {
                 const json = await res.clone().json();
