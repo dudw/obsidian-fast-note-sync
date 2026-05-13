@@ -8,9 +8,9 @@ on:
         required: false
         default: ''
       release_note:
-        description: 'Release notes / Changelog'
+        description: 'Release notes / Changelog (If empty, uses latest commit message)'
         required: false
-        default: 'Manual Release'
+        default: ''
 
 permissions:
   contents: write
@@ -40,9 +40,10 @@ jobs:
         with:
           node-version-file: ".node-version"
 
-      - name: Resolve Version
+      - name: Resolve Version and Note
         id: version
         run: |
+          # Resolve Version
           INPUT_TAG="${{ github.event.inputs.tag_name }}"
           if [ -z "$INPUT_TAG" ]; then
             CURRENT_VERSION=$(jq -r .version manifest.json)
@@ -51,6 +52,21 @@ jobs:
           else
             echo "Using manual tag: $INPUT_TAG"
             echo "tag=$INPUT_TAG" >> $GITHUB_OUTPUT
+          fi
+
+          # Resolve Release Note
+          INPUT_NOTE="${{ github.event.inputs.release_note }}"
+          if [ -z "$INPUT_NOTE" ]; then
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+            echo "Using latest commit message as release note."
+            echo "note<<EOF" >> $GITHUB_OUTPUT
+            echo "$COMMIT_MSG" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "Using manual release note."
+            echo "note<<EOF" >> $GITHUB_OUTPUT
+            echo "$INPUT_NOTE" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
 
       - name: Build
@@ -62,7 +78,7 @@ jobs:
           mkdir -p ${PKG_NAME}
           cp main.js manifest.json styles.css ${PKG_NAME}
           zip -r ${PKG_NAME}-v${{ steps.version.outputs.tag }}.zip ${PKG_NAME}
-          echo "${{ github.event.inputs.release_note }}" > changelog.txt
+          echo "${{ steps.version.outputs.note }}" > changelog.txt
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
@@ -72,7 +88,7 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-          body: ${{ github.event.inputs.release_note }}
+          body: ${{ steps.version.outputs.note }}
           target_commitish: ${{ github.sha }}
           overwrite_files: true
           files: |
@@ -97,7 +113,7 @@ jobs:
         env:
           CNB_REPO: haierkeys/obsidian-fast-note-sync
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
-          RELEASE_BODY: ${{ github.event.inputs.release_note }}
+          RELEASE_BODY: ${{ steps.version.outputs.note }}
           ZIP_FILE: fast-note-sync-v${{ steps.version.outputs.tag }}.zip
         run: |
           # 尝试推送 tag 到 CNB
