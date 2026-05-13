@@ -499,7 +499,7 @@ export class MenuManager {
           .setIcon("pause")
           .setTitle($("ui.menu.disable_sync"))
           .onClick(async () => {
-            this.plugin.websocket.unRegister();
+            this.plugin.websocket.unRegister(true);
             showSyncNotice($("ui.menu.disable_sync_desc"));
           });
         (item as any).dom.setAttribute("aria-label", $("ui.menu.disable_sync_desc"));

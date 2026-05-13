@@ -627,7 +627,9 @@ export default class FastSync extends Plugin {
         this.wsSettingChange = false
       }
 
-      this.websocket?.register()
+      if (this.websocket?.isRegister) {
+        this.websocket?.register()
+      }
 
       if (this.syncTimer) {
         clearTimeout(this.syncTimer)

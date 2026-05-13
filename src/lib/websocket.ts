@@ -36,7 +36,7 @@ export class WebSocketClient {
   //同步全部文件时设置
 
 
-  public isRegister: boolean = false
+  public isRegister: boolean = true
   private statusListeners: Set<(status: boolean) => void> = new Set();
 
   // Binary message handlers registry
@@ -361,13 +361,15 @@ export class WebSocketClient {
     }
   }
 
-  public unRegister() {
+  public unRegister(setUnregistered: boolean = false) {
     window.clearInterval(this.checkConnection)
     window.clearTimeout(this.checkReConnectTimeout)
     this.timeConnect = 0
     this.isOpen = false
     this.isAuth = false
-    this.isRegister = false
+    if (setUnregistered) {
+      this.isRegister = false
+    }
 
     if (this.ws) {
       // Use helper to cleanly close and remove listeners

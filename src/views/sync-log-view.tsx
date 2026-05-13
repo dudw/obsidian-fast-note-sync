@@ -143,9 +143,10 @@ const SyncLogComponent = ({ plugin }: { plugin: FastSync }) => {
         return logs.filter(log => {
             const matchCategory = categoryFilter === 'all' || log.category === categoryFilter;
             const matchType = typeFilter === 'all' || log.type === typeFilter;
-            return matchCategory && matchType;
+            const matchVault = !log.vault || log.vault === plugin.settings.vault;
+            return matchCategory && matchType && matchVault;
         });
-    }, [logs, categoryFilter, typeFilter]);
+    }, [logs, categoryFilter, typeFilter, plugin.settings.vault]);
 
     // 分页逻辑
     const paginatedLogs = React.useMemo(() => {

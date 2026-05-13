@@ -18,6 +18,7 @@ export interface SyncLog {
     status: LogStatus;
     progress?: number;
     message?: string;
+    vault?: string;
 }
 
 export class SyncLogManager {
@@ -99,7 +100,8 @@ export class SyncLogManager {
                 path: log.path,
                 status: log.status || 'success',
                 progress: log.progress,
-                message: log.message
+                message: log.message,
+                vault: log.vault
             };
             this.logs.unshift(newLog);
             if (this.logs.length > this.MAX_LOGS) {
@@ -114,7 +116,7 @@ export class SyncLogManager {
         this.notify();
     }
 
-    public addLog(type: LogType, action: string, message?: string, status: LogStatus = 'success', path?: string) {
+    public addLog(type: LogType, action: string, message?: string, status: LogStatus = 'success', path?: string, vault?: string) {
         this.addOrUpdateLog({
             id: Math.random().toString(36).substring(2, 11),
             type,
@@ -122,6 +124,7 @@ export class SyncLogManager {
             message,
             status,
             path,
+            vault,
             timestamp: Date.now()
         });
     }
@@ -141,6 +144,8 @@ export class SyncLogManager {
 
         // 提取路径信息
         const logPath = data.data?.Path || data.Path || data.path || data.data?.path;
+        // 提取 Vault 信息
+        const logVault = data.Vault || data.vault || data.data?.Vault || data.data?.vault;
 
         // 根据消息类型调整 action 名称
         let logAction = action;
@@ -175,13 +180,14 @@ export class SyncLogManager {
                 action: logAction,
                 status: targetStatus,
                 path: logPath,
+                vault: logVault,
                 message: data.message || (data.code !== undefined ? `Code: ${data.code}` : undefined)
             });
         } else {
             // 没有 sessionId 的消息
             const status = (data.code === 0 || data.code > 200) ? 'error' : 'success';
             const message = data.message || (data.code !== undefined ? `Code: ${data.code}` : undefined);
-            this.addLog('receive', logAction, message, status, logPath);
+            this.addLog('receive', logAction, message, status, logPath, logVault);
         }
     }
 
@@ -198,10 +204,12 @@ export class SyncLogManager {
             return;
         }
 
-        // 提取路径信息(仅当 data 是对象时)
+        // 提取路径和 Vault 信息(仅当 data 是对象时)
         let logPath: string | undefined = undefined;
+        let logVault: string | undefined = undefined;
         if (typeof data === "object" && data !== null) {
             logPath = (data as any).Path || (data as any).path || (data as any).data?.Path || (data as any).data?.path;
+            logVault = (data as any).Vault || (data as any).vault || (data as any).data?.Vault || (data as any).data?.vault;
         }
 
         // 根据消息类型调整 action 名称
@@ -223,9 +231,10 @@ export class SyncLogManager {
                 action: logAction,
                 status: targetStatus,
                 path: logPath,
+                vault: logVault,
             });
         } else {
-            this.addLog('send', logAction, undefined, targetStatus, logPath);
+            this.addLog('send', logAction, undefined, targetStatus, logPath, logVault);
         }
     }
 
