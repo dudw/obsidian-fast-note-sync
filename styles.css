@@ -851,14 +851,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0 16px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--background-modifier-border);
   margin-bottom: 8px;
 }
 .fns-sync-log-container .fns-sync-log-header .fns-sync-log-clear-btn {
   font-size: var(--font-ui-small);
-  padding: 4px 10px;
-  height: 30px;
+  padding: 4px;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
 }
 .fns-sync-log-container .fns-sync-log-header .fns-sync-log-clear-btn.is-active {
   color: var(--interactive-accent);

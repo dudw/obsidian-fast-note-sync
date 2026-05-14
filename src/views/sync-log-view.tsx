@@ -247,7 +247,7 @@ const SyncLogComponent = ({ plugin }: { plugin: FastSync }) => {
     return (
         <div className="fns-sync-log-container">
             <div className="fns-sync-log-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <h3 style={{ margin: 0 }}>{$("ui.log.title")}</h3>
                     <div
                         className="connection-status-container clickable-icon fns-ribbon-container"
@@ -262,14 +262,13 @@ const SyncLogComponent = ({ plugin }: { plugin: FastSync }) => {
                         {hasUpgrade && showUpgradeBadge && <span className="fns-ribbon-badge" style={{ display: 'block', top: '5px', right: '3px' }} />}
                     </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="fns-sync-log-header-actions" style={{ display: 'flex', gap: '2px' }}>
                     <button
                         onClick={() => {
                         (plugin.app as unknown as { setting: { open: () => void, openTabById: (id: string) => void } }).setting.open();
                         (plugin.app as unknown as { setting: { open: () => void, openTabById: (id: string) => void } }).setting.openTabById(plugin.manifest.id);
                     }}
                         className="fns-sync-log-clear-btn clickable-icon"
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px' }}
                         title={$("ui.menu.settings")}
                     >
                         <ObsidianIcon icon="settings" />
@@ -277,13 +276,16 @@ const SyncLogComponent = ({ plugin }: { plugin: FastSync }) => {
                     <button
                         onClick={showFilterMenu}
                         className={`fns-sync-log-clear-btn clickable-icon ${showMobileFilters ? 'is-active' : ''}`}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px' }}
                         title={$("ui.log.filter")}
                     >
                         <ObsidianIcon icon="filter" />
                     </button>
-                    <button onClick={clearLogs} className="fns-sync-log-clear-btn">
-                        {$("ui.log.clear")}
+                    <button
+                        onClick={clearLogs}
+                        className="fns-sync-log-clear-btn clickable-icon"
+                        title={$("ui.log.clear")}
+                    >
+                        <ObsidianIcon icon="brush-cleaning" />
                     </button>
                 </div>
             </div>

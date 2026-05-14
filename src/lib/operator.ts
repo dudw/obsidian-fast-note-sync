@@ -321,6 +321,8 @@ async function receiveSyncEndWrapper(data: unknown, plugin: FastSync, type: "not
     plugin.scannedConfigHashes.clear()
   }
 
+  //dddd
+
   // 3. 调用原始 End 处理函数 (更新时间戳等)
   if (type === "note") {
     await receiveNoteSyncEnd(data, plugin);
