@@ -21,10 +21,10 @@
   "setting.remote.paste_success": "7b69ef90b47755082fd0798ff8b97ebf",
   "setting.remote.no_config": "625e203db3340d2e048da71b0b73cba7",
   "setting.remote.api_url": "70a7d4a55ff43aea5dd05da7ea6d3831",
-  "setting.remote.api_url_desc": "92a86a49225611a8c7bce89194c43149",
-  "setting.remote.api_url_placeholder": "5767f482f3b88ab3717adfbb015c00cd",
-  "setting.remote.api_token": "f824f46dd4d9e4731eb29d4a23311788",
-  "setting.remote.api_token_desc": "cd56a2eccd5db4a83a6773f5d90dbae1",
+  "setting.remote.api_url_desc": "7425daee7afda848345bffbc9a4c2bc4",
+  "setting.remote.api_url_placeholder": "d3c19299ea0805091a3ff22f524ab39e",
+  "setting.remote.api_token": "dc4f776e9ce7e50bddadf5b319d4a61c",
+  "setting.remote.api_token_desc": "02c0c142ae10b9c18648c59a1456c8f0",
   "setting.remote.api_token_placeholder": "5f8e78e2c3899156c6c7937bfc9c3ab3",
   "setting.remote.vault_name": "b3b5e85bc87d237f195b07586e728275",
   "setting.remote.client_name": "9e37c58a17770160a6ade8ba6fec253d",
@@ -100,7 +100,7 @@
   "setting.support.console_mac": "e863cdf9b535bad16b1abde197636052",
   "setting.support.console_win": "90578ea8afc3e794f852a7422cbf31bf",
   "setting.support.debug_url": "913ab79bf1f70599442be9b0133da492",
-  "setting.support.debug_url_desc": "7fccca742cb0d1b184a472784692c465",
+  "setting.support.debug_url_desc": "d447c5c6974d9c827610cea4f38da689",
   "setting.debug.network_library": "b04ae574114949e7a24766f6c465eef4",
   "setting.debug.network_library_desc": "4023d32c51ab8b261733f5a4b98ab45f",
   "ui.history.title": "d09bd61797c771521df46c6cc62a3d8b",
@@ -369,5 +369,6 @@
   "setting.sync.binary_limit": "e1bf4d02a4e8921e17e1977c61af29b2",
   "setting.sync.binary_limit_desc": "e39f7fd7aa4120b6bec6abbeb699eaa8",
   "ui.share.not_shared_yet": "bc4c2a86d927d333f7715696ab931393",
-  "ui.log.action.ShareSyncRefresh": "35f7f6a608e4d80159acae6c1725cbff"
+  "ui.log.action.ShareSyncRefresh": "35f7f6a608e4d80159acae6c1725cbff",
+  "setting.remote.vault_name_desc": "977c4ecdd00bd42536a8a2f0ebc1dd7e"
 }
