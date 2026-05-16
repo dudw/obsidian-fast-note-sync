@@ -1080,7 +1080,7 @@
             &.fns-dot-attachment { background-color: #7C4DFF; }
             &.fns-dot-folder { background-color: #1E88E5; }
             &.fns-dot-config { background-color: #FF8A33; }
-            &.fns-dot-other { background-color: #999; }
+            &.fns-dot-other { background-color: #999999; }
             &.fns-dot-send { background-color: #FF8C00; }
             &.fns-dot-receive { background-color: #007BFF; }
           }
@@ -1401,7 +1401,7 @@
   z-index: 10001;
   width: 8px;
   height: 8px;
-  background-color: #999;
+  background-color: #999999;
   border-radius: 50%;
   border: 1.5px solid var(--background-primary);
   pointer-events: none;
