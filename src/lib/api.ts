@@ -149,7 +149,7 @@ export class HttpApiService {
         const base = urlToProbe.replace(/\/+$/, "");
 
         const controller = new AbortController();
-        const timeoutId = window.setTimeout(() => controller.abort(), 3000);
+        const timeoutId = window.setTimeout(() => controller.abort(), 1000);
 
         try {
             // 如果未开启自动重定向检测，使用标准请求检查健康状态

@@ -188,7 +188,12 @@ export class WebSocketClient {
     this.isRegister = true
 
     // 每次 ws 连接 / 重连 前 必须 先 /api/health 请求成功之后再请求ws
-    const isHealthy = await this.plugin.api.probeApiRedirect(this.plugin.runApi);
+    let isHealthy = await this.plugin.api.probeApiRedirect(this.plugin.runApi);
+    if (!isHealthy) {
+        // Capacitor 原生 HTTP 从后台恢复时可能未就绪，立即重试一次
+        // Capacitor native HTTP may not be ready after background; retry once immediately
+        isHealthy = await this.plugin.api.probeApiRedirect(this.plugin.runApi);
+    }
     if (!isHealthy) {
         dump("Health check failed before ws connect, scheduling reconnect...");
         if (this.plugin.settings.autoRedirectEnabled) {
