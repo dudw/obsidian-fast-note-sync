@@ -552,8 +552,8 @@ export class SettingTab extends PluginSettingTab {
           isDesktop: Platform.isDesktopApp,
           isMobile: Platform.isMobile,
           isTablet: Platform.isTablet,
-          platform: typeof process !== "undefined" ? process.platform : "unknown",
-          arch: typeof process !== "undefined" ? process.arch : "unknown",
+          platform: typeof process !== "undefined" ? (process.platform ?? "unknown"): "unknown",
+          arch: typeof process !== "undefined" ? (process.arch ?? "unknown") : "unknown",
           userAgent: "Obsidian/" + ((this.app as unknown as { version: string }).version || "unknown"),
           versions:
               typeof process !== "undefined" && process.versions
