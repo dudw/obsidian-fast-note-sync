@@ -53,7 +53,7 @@ export function formatAuthorizationError(data: { code: number; message?: unknown
 }
 
 // WebSocket 连接常量
-const RECONNECT_BASE_DELAY = 3000 // 重连基础延迟 (毫秒)
+const RECONNECT_BASE_DELAY = 1000 // 重连基础延迟 (毫秒)
 const NON_RECONNECT_REASONS = new Set([
   "AuthorizationFaild",
   "ClientClose",
@@ -77,6 +77,9 @@ export class WebSocketClient {
   public timeConnect = 0
   public count = 0
   private currentStartHandleId: number = 0
+  // 防并发锁：确保同一时间只有一个 register() 在执行，避免多个 health check 互相干扰
+  // Concurrency lock: ensures only one register() runs at a time, preventing concurrent health check interference
+  private registerPromise: Promise<void> | null = null
   //同步全部文件时设置
 
 
@@ -160,6 +163,23 @@ export class WebSocketClient {
       return;
     }
 
+    // 防并发锁：确保同一时间只有一个 register 在执行
+    // Concurrency lock: waits for any in-flight register to complete
+    if (this.registerPromise) {
+      await this.registerPromise;
+      return;
+    }
+
+    this.registerPromise = this._doRegister();
+    try {
+      await this.registerPromise;
+    } finally {
+      this.registerPromise = null;
+    }
+  }
+
+  private async _doRegister() {
+
     // Clean up existing closed socket if any
     if (this.ws) {
       this.cleanupWebSocket(this.ws);
@@ -168,7 +188,12 @@ export class WebSocketClient {
     this.isRegister = true
 
     // 每次 ws 连接 / 重连 前 必须 先 /api/health 请求成功之后再请求ws
-    const isHealthy = await this.plugin.api.probeApiRedirect(this.plugin.runApi);
+    let isHealthy = await this.plugin.api.probeApiRedirect(this.plugin.runApi);
+    if (!isHealthy) {
+        // Capacitor 原生 HTTP 从后台恢复时可能未就绪，立即重试一次
+        // Capacitor native HTTP may not be ready after background; retry once immediately
+        isHealthy = await this.plugin.api.probeApiRedirect(this.plugin.runApi);
+    }
     if (!isHealthy) {
         dump("Health check failed before ws connect, scheduling reconnect...");
         if (this.plugin.settings.autoRedirectEnabled) {
@@ -426,6 +451,12 @@ export class WebSocketClient {
 
   //ddd
   public checkReConnect() {
+    // 后台暂停期间不重连，避免无意义 health check 和退避计数增长
+    // Skip reconnect when watch is disabled, avoids pointless health checks and backoff inflation in background
+    if (!this.plugin.isWatchEnabled) {
+      dump("Watch disabled, skipping reconnect")
+      return
+    }
     window.clearTimeout(this.checkReConnectTimeout)
     if (this.timeConnect > 15) {
       // Max attempts hardcoded or use constant
