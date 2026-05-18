@@ -591,10 +591,12 @@ export class SettingTab extends PluginSettingTab {
     debugButton.onclick = async () => {
         try {
             await navigator.clipboard.writeText(this.getDebugInfo())
+            showSyncNotice($("setting.support.debug_desc"))
         } catch (e) {
             console.error("[fast-note-sync] copy debug info failed:", e)
+            // TODO(i18n): replace with localized key, e.g. $("setting.support.debug_copy_failed")
+            showSyncNotice("Failed to copy debug info.")
         }
-        showSyncNotice($("setting.support.debug_desc"))
     }
 
     if (isHomePage) {
@@ -603,8 +605,11 @@ export class SettingTab extends PluginSettingTab {
       issueButton.onclick = async () => {
         try {
             await navigator.clipboard.writeText(this.getDebugInfo())
+            showSyncNotice($("setting.support.debug_desc"))
         } catch (e) {
             console.error("[fast-note-sync] copy debug info failed:", e)
+            // TODO(i18n): replace with localized key, e.g. $("setting.support.debug_copy_failed")
+            showSyncNotice("Failed to copy debug info.")
         }
         new ConfirmModal(
           this.app,
