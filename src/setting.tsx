@@ -552,18 +552,18 @@ export class SettingTab extends PluginSettingTab {
           isDesktop: Platform.isDesktopApp,
           isMobile: Platform.isMobile,
           isTablet: Platform.isTablet,
-          platform: typeof process !== "undefined" ? process.platform : "unknown",
-          arch: typeof process !== "undefined" ? process.arch : "unknown",
+          platform: typeof process !== "undefined" ? (process.platform ?? "unknown"): "unknown",
+          arch: typeof process !== "undefined" ? (process.arch ?? "unknown") : "unknown",
           userAgent: "Obsidian/" + ((this.app as unknown as { version: string }).version || "unknown"),
           versions:
-            typeof process !== "undefined"
-              ? {
+              typeof process !== "undefined" && process.versions
+                ? {
                 node: process.versions.node,
                 electron: process.versions.electron,
                 chrome: process.versions.chrome,
                 v8: process.versions.v8,
-              }
-              : {},
+                }
+                : {},
           capacitor: (window as unknown as { Capacitor: { getPlatform(): string; isNative: boolean } }).Capacitor
             ? {
               platform: (window as unknown as { Capacitor: { getPlatform(): string; isNative: boolean } }).Capacitor.getPlatform(),
@@ -589,15 +589,28 @@ export class SettingTab extends PluginSettingTab {
     const debugButton = debugDiv.createEl("button")
     debugButton.setText($("setting.support.debug_copy"))
     debugButton.onclick = async () => {
-      await navigator.clipboard.writeText(this.getDebugInfo())
-      showSyncNotice($("setting.support.debug_desc"))
+        try {
+            await navigator.clipboard.writeText(this.getDebugInfo())
+            showSyncNotice($("setting.support.debug_desc"))
+        } catch (e) {
+            console.error("[fast-note-sync] copy debug info failed:", e)
+            // TODO(i18n): replace with localized key, e.g. $("setting.support.debug_copy_failed")
+            showSyncNotice("Failed to copy debug info.")
+        }
     }
 
     if (isHomePage) {
       const issueButton = debugDiv.createEl("button")
       issueButton.setText($("setting.support.issue"))
       issueButton.onclick = async () => {
-        await navigator.clipboard.writeText(this.getDebugInfo())
+        try {
+            await navigator.clipboard.writeText(this.getDebugInfo())
+            showSyncNotice($("setting.support.debug_desc"))
+        } catch (e) {
+            console.error("[fast-note-sync] copy debug info failed:", e)
+            // TODO(i18n): replace with localized key, e.g. $("setting.support.debug_copy_failed")
+            showSyncNotice("Failed to copy debug info.")
+        }
         new ConfirmModal(
           this.app,
           $("ui.title.notice"),
