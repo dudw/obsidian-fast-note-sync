@@ -62,7 +62,7 @@ export default class FastSync extends Plugin {
   clipboardReadTip: string = "" // 剪贴板读取提示信息
 
   isFirstSync: boolean = false // 是否为首次同步
-  isWatchEnabled: boolean = false // 是否启用文件监听
+  isWatchEnabled: boolean = true // 是否启用文件监听
   ignoredFiles: Set<string> = new Set() // 忽略的文件集合
   ignoredConfigFiles: Set<string> = new Set() // 忽略的配置文件集合
   lastSyncMtime: Map<string, number> = new Map() // 最后同步的修改时间
@@ -388,6 +388,23 @@ export default class FastSync extends Plugin {
 
       // 注册 WebSocket 状态监听 (Register WebSocket status listener)
       this.websocket.addStatusListener((status: boolean) => this.updateRibbonIcon(status))
+
+      // 注册 WebSocket 数据传输活动监听 — 任何数据收发时显示同步指示器 / Register data transfer activity listener
+      let activityTimer: ReturnType<typeof setTimeout> | null = null;
+      const scheduleTurnOff = () => {
+        if (activityTimer) clearTimeout(activityTimer);
+        activityTimer = setTimeout(() => {
+          if (this.concurrencyManager.hasPending()) {
+            scheduleTurnOff(); // 还有未确认操作，200ms 后再检查 / Still pending ACKs, recheck
+          } else {
+            this.menuManager.setSyncStatus(false);
+          }
+        }, 600);
+      };
+      this.websocket.addActivityListener(() => {
+        this.menuManager.setSyncStatus(true);
+        scheduleTurnOff();
+      });
 
       // 初始化分享指示器管理器 / Initialize share indicator manager
       this.shareIndicatorManager = new ShareIndicatorManager(this)
