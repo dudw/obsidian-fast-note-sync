@@ -146,7 +146,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   concurrencyControlEnabled: false,
   maxConcurrentUploads: 20,
   showConcurrencyIndicator: true,
-  showSyncIndicator: true,
+  showSyncIndicator: false,
   autoRedirectEnabled: false,
   wsPreProbeEnabled: true,
   // 手机 110，平板 126，与 CSS 硬编码值一致 / Phone 110, tablet 126, matches CSS defaults
