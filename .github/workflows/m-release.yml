@@ -78,6 +78,8 @@ jobs:
           fi
 
       - name: Build
+        env:
+          RELEASE_NOTE: ${{ steps.version.outputs.note }}
         run: |
           pnpm install
           pnpm run build
@@ -86,7 +88,7 @@ jobs:
           mkdir -p ${PKG_NAME}
           cp main.js manifest.json styles.css ${PKG_NAME}
           zip -r ${PKG_NAME}-v${{ steps.version.outputs.tag }}.zip ${PKG_NAME}
-          # echo "${{ steps.version.outputs.note }}" > changelog.txt
+          # echo "$RELEASE_NOTE" > changelog.txt
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
