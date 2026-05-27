@@ -1834,13 +1834,13 @@ body .suggestion-container {
 /* Bottom scroll hint for intermediate versions / 中间版本底部滚动提示 */
 .fns-changelog-scroll-hint {
   position: sticky;
-  bottom: 0px;
+  bottom: 0;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 8px;
-  margin-bottom: 0px;
+  margin-bottom: 0;
   padding: 10px 14px;
   background-color: color-mix(in srgb, var(--interactive-accent) 4%, var(--background-secondary));
   border-radius: 6px;
@@ -3609,7 +3609,6 @@ body .suggestion-container {
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   z-index: 10000;
   display: flex;
   justify-content: center;
@@ -3785,7 +3784,7 @@ body .suggestion-container {
 /* Multi-version scroll area / 更新日志滚动区 */
 .fns-changelog-scroll-area {
   margin-top: 15px;
-  padding-top: 0px;
+  padding-top: 0;
   border-top: 1px dashed var(--background-modifier-border);
   max-height: 420px;
   overflow-y: auto;
@@ -3812,10 +3811,11 @@ body .suggestion-container {
 .fns-changelog-scroll-area:hover::-webkit-scrollbar-thumb {
   background-color: var(--text-accent);
 }
-.fns-changelog-scroll-area .fns-changelog-content {
-  max-height: none !important;
-  overflow: visible !important;
-  padding-right: 0 !important;
+
+.fns-about-modal-container .modal-content .fns-changelog-scroll-area .fns-changelog-content {
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
 
 /* Multi-version changelog list / 多版本更新日志列表 */
@@ -3837,7 +3837,7 @@ body .suggestion-container {
 
 .fns-changelog-history-header {
   position: sticky;
-  top: 0px;
+  top: 0;
   z-index: 5;
   display: flex;
   align-items: center;
