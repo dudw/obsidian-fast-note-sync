@@ -35,6 +35,7 @@ export interface StructuredMessageData {
   details?: string;
   data?: Record<string, unknown> | null;
   vault?: string;
+  context?: string; // 当前同步上下文 / Current sync context
 }
 
 function normalizeNoticeValue(value: unknown): string {
@@ -254,6 +255,17 @@ export class WebSocketManager {
         dump("Service vault " + data.vault + " not match " + this.plugin.settings.vault);
         return;
       }
+
+      // 基于 Context 进行过滤：如果处于活跃的同步中，且业务消息包含 context，则必须匹配
+      // Filter based on Context: if there's an active sync context and incoming business message has a context, it must match
+      if (this.plugin.syncState.activeSyncContext) {
+        const isControlMsg = msgAction === WSAction.ClientReceiveAuth || msgAction === WSAction.ClientReceiveInfo;
+        if (!isControlMsg && data.context && data.context !== this.plugin.syncState.activeSyncContext) {
+          dump(`[SyncContext] Discard message ${msgAction} due to mismatched context. Expected: ${this.plugin.syncState.activeSyncContext}, Got: ${data.context}`);
+          return;
+        }
+      }
+
       const handler = receiveOperators.get(msgAction);
       if (handler) {
         void handler(data.data, this.plugin);

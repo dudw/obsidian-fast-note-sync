@@ -32,6 +32,8 @@ export class SyncState {
   isWaitClearSync = false;
   /** 当前同步类型 / Current sync type */
   currentSyncType: "full" | "incremental" = "incremental";
+  /** 当前活跃的同步上下文 UUID / Current active sync context UUID */
+  activeSyncContext: string | null = null;
 
   // ─── Per-type sync task statistics ───────────────────────────────────────────
   noteSyncTasks: SyncTaskStats = { needUpload: 0, needModify: 0, needSyncMtime: 0, needDelete: 0, completed: 0 };
