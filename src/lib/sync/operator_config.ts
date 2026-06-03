@@ -1,10 +1,10 @@
 import { normalizePath, App } from "obsidian";
 
-import { hashContent, dump, dumpError, configIsPathExcluded, getSafeCtime, isPathInConfigSyncDirs, showSyncNotice, isInWhitelist, hashFileAsync, checkAndNotifyCaseConflict } from "./helps";
+import { hashContent, dump, dumpError, configIsPathExcluded, getSafeCtime, isPathInConfigSyncDirs, showSyncNotice, isInWhitelist, hashFileAsync, checkAndNotifyCaseConflict } from "../utils/helpers";
 import { SyncLogManager } from "./sync_log_manager";
-import { ReceiveMessage, ReceiveMtimeMessage, ReceivePathMessage, SyncEndData } from "./types";
-import type FastSync from "../main";
-import { $ } from "../i18n/lang";
+import { ReceiveMessage, ReceiveMtimeMessage, ReceivePathMessage, SyncEndData } from "../utils/types";
+import type FastSync from "../../main";
+import { $ } from "../../i18n/lang";
 
 
 /**
@@ -99,7 +99,7 @@ export const configModify = async function (path: string, plugin: FastSync, even
     plugin.pendingConfigDeleteAcks.delete(path)
     plugin.pendingConfigModifies.set(path, contentHash)
     plugin.localStorageManager.savePending('pendingConfigModifies', plugin.pendingConfigModifies)
-    await plugin.concurrencyManager.waitForSlot(path)
+    await plugin.concurrencyLimiter.waitForSlot(path)
     void plugin.websocket.SendMessage("SettingModify", data)
 
     plugin.removeIgnoredConfigFile(path)
@@ -124,7 +124,7 @@ export const configDelete = async function (path: string, plugin: FastSync, even
         path: path,
         pathHash: hashContent(path),
     }
-    await plugin.concurrencyManager.waitForSlot(path)
+    await plugin.concurrencyLimiter.waitForSlot(path)
     void plugin.websocket.SendMessage("SettingDelete", data, undefined, () => {
         // 消息真正写入 TCP 缓冲区后加入 pending set，等待 SettingDeleteAck 再删 hash
         // Add to pending set only after message is actually buffered; remove hash only on SettingDeleteAck
@@ -276,7 +276,7 @@ export const receiveConfigUpload = async function (data: ReceivePathMessage, plu
     // Temporarily store hash in pending map, update configHashManager only after server SettingModifyAck
     plugin.pendingConfigModifies.set(data.path, contentHash)
     plugin.localStorageManager.savePending('pendingConfigModifies', plugin.pendingConfigModifies)
-    await plugin.concurrencyManager.waitForSlot(data.path)
+    await plugin.concurrencyLimiter.waitForSlot(data.path)
     void plugin.websocket.SendMessage("SettingModify", sendData, undefined, function () {
         plugin.removeIgnoredConfigFile(data.path);
         plugin.configSyncTasks.completed++;
@@ -361,7 +361,7 @@ export const receiveConfigSyncDelete = async function (data: { path: string, las
     if (data.lastTime && data.lastTime > Number(plugin.localStorageManager.getMetadata("lastConfigSyncTime"))) {
         plugin.localStorageManager.setMetadata("lastConfigSyncTime", data.lastTime)
     }
-    if (data.path) { plugin.concurrencyManager.releaseSlot(data.path) }
+    if (data.path) { plugin.concurrencyLimiter.releaseSlot(data.path) }
 
     plugin.configSyncTasks.completed++
 }
@@ -425,7 +425,7 @@ export const receiveConfigModifyAck = async function (data: { lastTime?: number;
         plugin.localStorageManager.setMetadata("lastConfigSyncTime", data.lastTime)
     }
     if (data.path) {
-        plugin.concurrencyManager.releaseSlot(data.path)
+        plugin.concurrencyLimiter.releaseSlot(data.path)
     }
 }
 
@@ -444,7 +444,7 @@ export const receiveConfigDeleteAck = function (data: { lastTime?: number; path?
         plugin.localStorageManager.setMetadata("lastConfigSyncTime", data.lastTime)
     }
     if (data.path) {
-        plugin.concurrencyManager.releaseSlot(data.path)
+        plugin.concurrencyLimiter.releaseSlot(data.path)
     }
 }
 

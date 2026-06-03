@@ -1,9 +1,9 @@
 import { TFolder, normalizePath } from "obsidian";
 
-import { SyncEndData, FolderSyncRenameMessage } from "./types";
-import { hashContent, dump, dumpError, isPathExcluded, waitForFolderEmpty, vaultDelete, checkAndNotifyCaseConflict } from "./helps";
+import { SyncEndData, FolderSyncRenameMessage } from "../utils/types";
+import { hashContent, dump, dumpError, isPathExcluded, waitForFolderEmpty, vaultDelete, checkAndNotifyCaseConflict } from "../utils/helpers";
 import { SyncLogManager } from "./sync_log_manager";
-import type FastSync from "../main";
+import type FastSync from "../../main";
 
 
 /**

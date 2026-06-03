@@ -1,7 +1,7 @@
 import { moment } from "obsidian";
 
-import FastSync from "../main";
-import { dumpError } from "./helps";
+import FastSync from "../../main";
+import { dumpError } from "../utils/helpers";
 
 
 export type LogType = 'send' | 'receive' | 'info' | 'error';

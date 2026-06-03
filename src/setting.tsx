@@ -2,15 +2,15 @@ import { App, PluginSettingTab, Setting, Platform, SearchComponent, MarkdownRend
 import { createRoot, Root } from "react-dom/client";
 import { unzipSync } from "fflate";
 
-import { parseRules, SyncRule, getPluginDir, debounce, showSyncNotice, dump, dumpError } from "./lib/helps";
-import { resetSettingSyncTime, rebuildAllHashes, clearAllHashes } from "./lib/operator";
+import { parseRules, SyncRule, getPluginDir, debounce, showSyncNotice, dump, dumpError } from "./lib/utils/helpers";
+import { resetSettingSyncTime, rebuildAllHashes, clearAllHashes } from "./lib/sync/operator";
 import { SettingsView, SupportView } from "./views/settings-view";
 import { RuleEditorModal } from "./views/rule-editor-modal";
 import { PathSuggestOptions } from "./views/path-suggest";
 import { DebugLogModal } from "./views/debug-log-modal";
 import { ConfirmModal } from "./views/confirm-modal";
 import { RuleEditor } from "./views/rule-editor";
-import { AppWithInternal } from "./lib/types";
+import { AppWithInternal } from "./lib/utils/types";
 import { $ } from "./i18n/lang";
 import FastSync from "./main";
 

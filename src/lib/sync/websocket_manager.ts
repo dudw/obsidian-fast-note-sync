@@ -1,15 +1,15 @@
 import { moment, Platform } from "obsidian";
 
-import { handleFileChunkDownload, BINARY_PREFIX_FILE_SYNC, clearUploadQueue } from "./file_operator";
-import { dump, addRandomParam, showSyncNotice, safeStringify } from "./helps";
-import { enSendDTOToProtobuf, deReceivePacket } from "../pb/protobuf_mapper";
+import { handleFileChunkDownload, BINARY_PREFIX_FILE_SYNC, clearUploadQueue } from "./operator_file";
+import { dump, addRandomParam, showSyncNotice, safeStringify } from "../utils/helpers";
+import { enSendDTOToProtobuf, deReceivePacket } from "../../pb/protobuf_mapper";
 import { receiveOperators, startupSync } from "./operator";
 import { SyncLogManager } from "./sync_log_manager";
 import * as WSAction from "./websocket_action";
-import { WebSocketClient } from "./websocket";
-import { CLIENT_TYPE } from "./types";
-import type FastSync from "../main";
-import { $ } from "../i18n/lang";
+import { WebSocketClient } from "./websocket_client";
+import { CLIENT_TYPE } from "../utils/types";
+import type FastSync from "../../main";
+import { $ } from "../../i18n/lang";
 
 
 // 冲突相关错误码
@@ -112,7 +112,7 @@ export class WebSocketManager {
           this.plugin.isSyncRequesting = false;
         }
         clearUploadQueue();
-        this.plugin.concurrencyManager.clear();
+        this.plugin.concurrencyLimiter.clear();
       },
       onMessage: (client, action, data) => {
         this.handleStructuredMessage(action, data);

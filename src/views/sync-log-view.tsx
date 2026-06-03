@@ -2,8 +2,8 @@ import { ItemView, WorkspaceLeaf, moment, setIcon, Platform, MenuItem, Menu } fr
 import { createRoot, Root } from "react-dom/client";
 import * as React from "react";
 
-import { SyncLogManager, SyncLog } from "../lib/sync_log_manager";
-import { MenuItemWithInternal } from "../lib/types";
+import { SyncLogManager, SyncLog } from "../lib/sync/sync_log_manager";
+import { MenuItemWithInternal } from "../lib/utils/types";
 import { $ } from "../i18n/lang";
 import FastSync from "../main";
 

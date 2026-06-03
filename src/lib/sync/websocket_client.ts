@@ -1,5 +1,5 @@
 import { moment } from "obsidian";
-import { dump, dumpError, isWsUrl } from "./helps";
+import { dump, dumpError, isWsUrl } from "../utils/helpers";
 
 // WebSocket 连接常量
 const RECONNECT_BASE_DELAY = 1000; // 重连基础延迟 (毫秒)

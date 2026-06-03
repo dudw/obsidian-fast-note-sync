@@ -1,29 +1,29 @@
 import { Plugin, Platform, addIcon } from "obsidian";
 
-import { dump, dumpError, checkAndNotifyCaseConflict, setLogEnabled, isPathMatch, parseRules, stringifyRules, getPluginDir, showSyncNotice, loadApiToken, saveApiToken, loadApiUrl, saveApiUrl, loadVault, saveVault, loadAutoRedirect, saveAutoRedirect, loadWsPreProbe, saveWsPreProbe } from "./lib/helps";
-import { clearAllTempChunks, abortAllFileOperations, resetFileOperations } from "./lib/file_operator";
+import { dump, dumpError, checkAndNotifyCaseConflict, setLogEnabled, isPathMatch, parseRules, stringifyRules, getPluginDir, showSyncNotice, loadApiToken, saveApiToken, loadApiUrl, saveApiUrl, loadVault, saveVault, loadAutoRedirect, saveAutoRedirect, loadWsPreProbe, saveWsPreProbe } from "./lib/utils/helpers";
+import { clearAllTempChunks, abortAllFileOperations, resetFileOperations } from "./lib/sync/operator_file";
 import { SettingTab, PluginSettings, DEFAULT_SETTINGS } from "./setting";
 import { SyncLogView, SYNC_LOG_VIEW_TYPE } from "./views/sync-log-view";
-import { ShareIndicatorManager } from "./lib/share_indicator_manager";
-import { FolderSnapshotManager } from "./lib/folder_snapshot_manager";
-import { FileDownloadSession, AppWithInternal } from "./lib/types";
-import { LocalStorageManager } from "./lib/local_storage_manager";
-import { ConcurrencyManager } from "./lib/concurrency_manager";
-import { ConfigHashManager } from "./lib/config_hash_manager";
+import { ShareIndicatorManager } from "./lib/ui/share_indicator_manager";
+import { FolderSnapshotManager } from "./lib/storage/folder_snapshot_manager";
+import { FileDownloadSession, AppWithInternal } from "./lib/utils/types";
+import { LocalStorageManager } from "./lib/storage/local_storage_manager";
+import { ConcurrencyLimiter } from "./lib/sync/concurrency_limiter";
+import { ConfigHashManager } from "./lib/storage/config_hash_manager";
 import { RecycleBinModal } from "./views/recycle-bin-modal";
-import { FileCloudPreview } from "./lib/file_cloud_preview";
-import { FileHashManager } from "./lib/file_hash_manager";
-import { DebugLogManager } from "./lib/debug_log_manager";
-import { SyncLogManager } from "./lib/sync_log_manager";
+import { FileCloudPreview } from "./lib/storage/file_cloud_preview";
+import { FileHashManager } from "./lib/storage/file_hash_manager";
+import { DebugLogManager } from "./lib/utils/debug_log_manager";
+import { SyncLogManager } from "./lib/sync/sync_log_manager";
 import { DebugLogModal } from "./views/debug-log-modal";
-import { VersionManager } from "./lib/version_manager";
-import { ConfigManager } from "./lib/config_manager";
-import { EventManager } from "./lib/events_manager";
-import { WebSocketManager } from "./lib/websocket_manager";
-import { MenuManager } from "./lib/menu_manager";
-import { LockManager } from "./lib/lock_manager";
-import { handleSync } from "./lib/operator";
-import { HttpApiService } from "./lib/api";
+import { VersionManager } from "./lib/utils/version_manager";
+import { ConfigManager } from "./lib/sync/config_manager";
+import { EventManager } from "./lib/utils/events_manager";
+import { WebSocketManager } from "./lib/sync/websocket_manager";
+import { MenuManager } from "./lib/ui/menu_manager";
+import { LockManager } from "./lib/sync/lock_manager";
+import { handleSync } from "./lib/sync/operator";
+import { HttpApiService } from "./lib/api/http_api_service";
 import { $ } from "./i18n/lang";
 
 
@@ -51,7 +51,7 @@ export default class FastSync extends Plugin {
   versionManager: VersionManager // 版本提示与自动升级管理器
   configManager: ConfigManager // 配置管理器
   lockManager: LockManager // 锁管理器
-  concurrencyManager: ConcurrencyManager // 并发管理器
+  concurrencyLimiter: ConcurrencyLimiter // 并发管理器
   eventManager: EventManager // 事件管理器
   menuManager: MenuManager // 菜单管理器
   private menuManagerInitialized: boolean = false // 防止 onLayoutReady 重复初始化 / Guard against duplicate onLayoutReady init
@@ -329,7 +329,7 @@ export default class FastSync extends Plugin {
     this.lockManager = new LockManager()
 
     // 初始化并发管理器
-    this.concurrencyManager = new ConcurrencyManager(this)
+    this.concurrencyLimiter = new ConcurrencyLimiter(this)
 
 
     // 注册协议处理器 (核心功能)
@@ -404,7 +404,7 @@ export default class FastSync extends Plugin {
       const scheduleTurnOff = () => {
         if (activityTimer) window.clearTimeout(activityTimer);
         activityTimer = window.setTimeout(() => {
-          if (this.concurrencyManager.hasPending()) {
+          if (this.concurrencyLimiter.hasPending()) {
             scheduleTurnOff(); // 还有未确认操作，200ms 后再检查 / Still pending ACKs, recheck
           } else {
             this.menuManager.setSyncStatus(false);

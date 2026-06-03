@@ -1,4 +1,4 @@
-import * as WSAction from "../lib/websocket_action";
+import * as WSAction from "../lib/sync/websocket_action";
 import { proto } from "./v1/sync";
 
 

@@ -1,9 +1,9 @@
 import { TFile, TAbstractFile, normalizePath } from "obsidian";
 
-import { ReceiveMessage, ReceiveMtimeMessage, ReceivePathMessage, SyncEndData } from "./types";
-import { hashContent, hashContentAsync, dump, dumpError, isPathExcluded, getSafeCtime, vaultDelete, checkAndNotifyCaseConflict } from "./helps";
+import { ReceiveMessage, ReceiveMtimeMessage, ReceivePathMessage, SyncEndData } from "../utils/types";
+import { hashContent, hashContentAsync, dump, dumpError, isPathExcluded, getSafeCtime, vaultDelete, checkAndNotifyCaseConflict } from "../utils/helpers";
 import { SyncLogManager } from "./sync_log_manager";
-import type FastSync from "../main";
+import type FastSync from "../../main";
 
 
 /**
@@ -62,7 +62,7 @@ export const noteModify = async function (file: TAbstractFile, plugin: FastSync,
         plugin.pendingNoteModifies.set(file.path, contentHash)
         plugin.localStorageManager.savePending('pendingNoteModifies', plugin.pendingNoteModifies)
       }
-      await plugin.concurrencyManager.waitForSlot(file.path)
+      await plugin.concurrencyLimiter.waitForSlot(file.path)
       void plugin.websocket.SendMessage("NoteModify", data)
       dump(`Note modify send`, data.path, data.contentHash, data.mtime, data.pathHash)
     } finally {
@@ -100,7 +100,7 @@ export const noteDelete = async function (file: TAbstractFile, plugin: FastSync,
         path: file.path,
         pathHash: hashContent(file.path),
       }
-      await plugin.concurrencyManager.waitForSlot(file.path)
+      await plugin.concurrencyLimiter.waitForSlot(file.path)
       void plugin.websocket.SendMessage("NoteDelete", data, undefined, () => {
         // 消息真正写入 TCP 缓冲区后加入 pending set，等待 NoteDeleteAck 再删 hash
         // Add to pending set only after message is actually buffered; remove hash only on NoteDeleteAck
@@ -131,7 +131,7 @@ export const noteDeleteByPath = async function (filePath: string, plugin: FastSy
     plugin.localStorageManager.savePending('pendingNoteModifies', plugin.pendingNoteModifies)
     plugin.addIgnoredFile(filePath)
     try {
-      await plugin.concurrencyManager.waitForSlot(filePath)
+      await plugin.concurrencyLimiter.waitForSlot(filePath)
       void plugin.websocket.SendMessage("NoteDelete", {
         vault: plugin.settings.vault,
         path: filePath,
@@ -186,7 +186,7 @@ export const noteRename = async function (file: TAbstractFile, oldfile: string, 
       // 将重命名信息推入 FIFO 队列，等待服务端 NoteRenameAck 后再更新 hashManager
       // Push rename info to FIFO queue, update hashManager only after server NoteRenameAck
       plugin.pendingNoteRenames.push({ oldPath: oldfile, newPath: file.path, contentHash })
-      await plugin.concurrencyManager.waitForSlot(file.path, true)
+      await plugin.concurrencyLimiter.waitForSlot(file.path, true)
       void plugin.websocket.SendMessage("NoteRename", data)
       dump(`Note rename send`, data.path, data.pathHash)
     } finally {
@@ -318,7 +318,7 @@ export const receiveNoteUpload = async function (data: ReceivePathMessage, plugi
   // Overwrites any stale pending entry left by a previously interrupted noteModify.
   plugin.pendingNoteModifies.set(file.path, contentHash)
   plugin.localStorageManager.savePending('pendingNoteModifies', plugin.pendingNoteModifies)
-  await plugin.concurrencyManager.waitForSlot(file.path)
+  await plugin.concurrencyLimiter.waitForSlot(file.path)
   void plugin.websocket.SendMessage("NoteModify", sendData, undefined, () => {
     plugin.removeIgnoredFile(file.path)
     plugin.noteSyncTasks.completed++
@@ -566,7 +566,7 @@ export const receiveNoteModifyAck = function (data: { lastTime?: number; path?: 
     plugin.localStorageManager.setMetadata("lastNoteSyncTime", data.lastTime)
   }
   if (data.path) {
-    plugin.concurrencyManager.releaseSlot(data.path)
+    plugin.concurrencyLimiter.releaseSlot(data.path)
   }
 }
 
@@ -585,7 +585,7 @@ export const receiveNoteRenameAck = function (data: { lastTime?: number }, plugi
   if (data.lastTime && data.lastTime > Number(plugin.localStorageManager.getMetadata("lastNoteSyncTime"))) {
     plugin.localStorageManager.setMetadata("lastNoteSyncTime", data.lastTime)
   }
-  plugin.concurrencyManager.releaseFifoSlot()
+  plugin.concurrencyLimiter.releaseFifoSlot()
 }
 
 // 收到 NoteDeleteAck，仅当路径仍在 pending set 中时才从 hashManager 移除
@@ -594,7 +594,7 @@ export const receiveNoteDeleteAck = function (data: { lastTime?: number; path?: 
   if (data.path && plugin.pendingNoteDeleteAcks.has(data.path)) {
     plugin.fileHashManager.removeFileHash(data.path)
     plugin.pendingNoteDeleteAcks.delete(data.path)
-    plugin.concurrencyManager.releaseSlot(data.path)
+    plugin.concurrencyLimiter.releaseSlot(data.path)
   }
   if (data.lastTime && data.lastTime > Number(plugin.localStorageManager.getMetadata("lastNoteSyncTime"))) {
     plugin.localStorageManager.setMetadata("lastNoteSyncTime", data.lastTime)
