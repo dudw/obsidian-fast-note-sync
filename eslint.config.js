@@ -1,6 +1,7 @@
+import obsidianmd from "eslint-plugin-obsidianmd";
 import tsparser from "@typescript-eslint/parser";
 import { defineConfig } from "eslint/config";
-import obsidianmd from "eslint-plugin-obsidianmd";
+
 
 export default defineConfig([
   {
@@ -29,6 +30,7 @@ export default defineConfig([
       "obsidianmd/sample-names": "off",
       // example: add a rule not in the recommended set and set its severity
       "obsidianmd/prefer-file-manager-trash-file": "error",
+      "@typescript-eslint/no-deprecated": "off",
     },
   },
 ]);
