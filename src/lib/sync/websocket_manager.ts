@@ -352,9 +352,9 @@ export class WebSocketManager {
       // If user manually triggered sync, execute once even with manualSyncEnabled
       if (pendingType) {
         if (pendingType === 'full') {
-          startupFullSync(this.plugin);
+          void startupFullSync(this.plugin);
         } else {
-          startupSync(this.plugin);
+          void startupSync(this.plugin);
         }
       } else {
         dump("Full Manual Sync Mode enabled, skipping startup sync");
@@ -365,9 +365,9 @@ export class WebSocketManager {
     // 有 pending 同步请求时，使用 pending 的类型；否则走默认增量同步
     // If pending sync requested, use its type; otherwise default incremental
     if (pendingType === 'full') {
-      startupFullSync(this.plugin);
+      void startupFullSync(this.plugin);
     } else {
-      startupSync(this.plugin);
+      void startupSync(this.plugin);
     }
   }
 
