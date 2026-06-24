@@ -57,6 +57,13 @@ export const FolderSyncRename: WSReceiveAction = "FolderSyncRename";
 export const FolderModifyAck: WSReceiveAction = "FolderModifyAck";
 
 /**
+ * FolderSyncBatchAck folder sync batch receive ack / 文件夹分批同步接收确认
+ * Sent by server after receiving a non-final folder sync batch, signaling client to send next batch.
+ * 服务端接收到中间批次后发回，通知客户端可以发送下一批数据。
+ */
+export const FolderSyncBatchAck: WSReceiveAction = "FolderSyncBatchAck";
+
+/**
  * FolderRenameAck folder rename operation ack / 文件夹重命名操作 ack
  */
 export const FolderRenameAck: WSReceiveAction = "FolderRenameAck";
@@ -112,6 +119,13 @@ export const NoteRenameAck: WSReceiveAction = "NoteRenameAck";
  */
 export const NoteDeleteAck: WSReceiveAction = "NoteDeleteAck";
 
+/**
+ * NoteSyncBatchAck note sync batch receive ack / 笔记分批同步接收确认
+ * Sent by server after receiving a non-final note sync batch, signaling client to send next batch.
+ * 服务端接收到中间批次后发回，通知客户端可以发送下一批数据。
+ */
+export const NoteSyncBatchAck: WSReceiveAction = "NoteSyncBatchAck";
+
 // ---------------- File ----------------
 /**
  * FileSyncUpdate file synchronization update / 文件同步更新
@@ -163,6 +177,13 @@ export const FileUploadAck: WSReceiveAction = "FileUploadAck";
  */
 export const FileDeleteAck: WSReceiveAction = "FileDeleteAck";
 
+/**
+ * FileSyncBatchAck file sync batch receive ack / 附件分批同步接收确认
+ * Sent by server after receiving a non-final file sync batch, signaling client to send next batch.
+ * 服务端接收到中间批次后发回，通知客户端可以发送下一批数据。
+ */
+export const FileSyncBatchAck: WSReceiveAction = "FileSyncBatchAck";
+
 // ---------------- Setting ----------------
 /**
  * SettingSyncModify setting synchronization modification / 设置同步修改
@@ -203,6 +224,13 @@ export const SettingModifyAck: WSReceiveAction = "SettingModifyAck";
  * SettingDeleteAck setting delete operation ack / 设置删除操作 ack
  */
 export const SettingDeleteAck: WSReceiveAction = "SettingDeleteAck";
+
+/**
+ * SettingSyncBatchAck setting sync batch receive ack / 配置分批同步接收确认
+ * Sent by server after receiving a non-final setting sync batch, signaling client to send next batch.
+ * 服务端接收到中间批次后发回，通知客户端可以发送下一批数据。
+ */
+export const SettingSyncBatchAck: WSReceiveAction = "SettingSyncBatchAck";
 
 // ---------------- Share ----------------
 /**
