@@ -293,7 +293,39 @@ export const receiveOperators: Map<WSAction.WSReceiveAction, OperatorHandler> = 
   [WSAction.SettingSyncBatchAck, (data, plugin) => { plugin.websocket.emit("SettingSyncBatchAck", data); }],
   [WSAction.FolderSyncBatchAck, (data, plugin) => { plugin.websocket.emit("FolderSyncBatchAck", data); }],
   [WSAction.ShareSyncRefresh, receiveShareSyncRefresh],
+  [WSAction.FolderSyncPage, (data, plugin) => handleSyncPage(data, plugin, "folder")],
+  [WSAction.NoteSyncPage, (data, plugin) => handleSyncPage(data, plugin, "note")],
+  [WSAction.FileSyncPage, (data, plugin) => handleSyncPage(data, plugin, "file")],
+  [WSAction.SettingSyncPage, (data, plugin) => handleSyncPage(data, plugin, "setting")],
 ] as [WSAction.WSReceiveAction, OperatorHandler][]);
+
+/**
+ * 统一处理分页控制消息
+ */
+function handleSyncPage(data: unknown, plugin: FastSync, type: "note" | "file" | "setting" | "folder"): void {
+  const pageMsg = data as {
+    pageIndex: number;
+    pageSize: number;
+    totalCount: number;
+    isLast: boolean;
+    context: string;
+  };
+
+  dump(`[PageSync] Received page info for ${type}, pageIndex: ${pageMsg.pageIndex}, totalCount: ${pageMsg.totalCount}, isLast: ${pageMsg.isLast}`);
+
+  plugin.syncPageStateMap.set(type, {
+    pageIndex: pageMsg.pageIndex,
+    pageSize: pageMsg.pageSize,
+    totalCount: pageMsg.totalCount,
+    isLast: pageMsg.isLast,
+    completedCount: 0
+  });
+
+  if (pageMsg.totalCount === 0) {
+    dump(`[PageSync] Page ${pageMsg.pageIndex} for ${type} is empty. Sending ACK immediately.`);
+    plugin.sendSyncPageAck(type, pageMsg.pageIndex);
+  }
+}
 
 /**
  * 收到分享状态变更通知，全量刷新分享路径

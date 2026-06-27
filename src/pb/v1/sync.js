@@ -27303,6 +27303,2790 @@ export const proto = $root.proto = (() => {
             return FolderDeleteAckMessage;
         })();
 
+        v1.NoteSyncPageMessage = (function() {
+
+            /**
+             * Properties of a NoteSyncPageMessage.
+             * @typedef {Object} proto.v1.NoteSyncPageMessage.$Properties
+             * @property {string|null} [context] NoteSyncPageMessage context
+             * @property {number|null} [pageIndex] NoteSyncPageMessage pageIndex
+             * @property {number|null} [pageSize] NoteSyncPageMessage pageSize
+             * @property {number|null} [totalCount] NoteSyncPageMessage totalCount
+             * @property {boolean|null} [isLast] NoteSyncPageMessage isLast
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+
+            /**
+             * Properties of a NoteSyncPageMessage.
+             * @memberof proto.v1
+             * @interface INoteSyncPageMessage
+             * @augments proto.v1.NoteSyncPageMessage.$Properties
+             * @deprecated Use proto.v1.NoteSyncPageMessage.$Properties instead.
+             */
+
+            /**
+             * Shape of a NoteSyncPageMessage.
+             * @typedef {proto.v1.NoteSyncPageMessage.$Properties} proto.v1.NoteSyncPageMessage.$Shape
+             */
+
+            /**
+             * Constructs a new NoteSyncPageMessage.
+             * @memberof proto.v1
+             * @classdesc Represents a NoteSyncPageMessage.
+             * @constructor
+             * @param {proto.v1.NoteSyncPageMessage.$Properties=} [properties] Properties to set
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+            const NoteSyncPageMessage = function (properties) {
+                if (properties)
+                    for (let keys = $Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                            this[keys[i]] = properties[keys[i]];
+            };
+
+            /**
+             * NoteSyncPageMessage context.
+             * @member {string} context
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @instance
+             */
+            NoteSyncPageMessage.prototype.context = "";
+
+            /**
+             * NoteSyncPageMessage pageIndex.
+             * @member {number} pageIndex
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @instance
+             */
+            NoteSyncPageMessage.prototype.pageIndex = 0;
+
+            /**
+             * NoteSyncPageMessage pageSize.
+             * @member {number} pageSize
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @instance
+             */
+            NoteSyncPageMessage.prototype.pageSize = 0;
+
+            /**
+             * NoteSyncPageMessage totalCount.
+             * @member {number} totalCount
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @instance
+             */
+            NoteSyncPageMessage.prototype.totalCount = 0;
+
+            /**
+             * NoteSyncPageMessage isLast.
+             * @member {boolean} isLast
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @instance
+             */
+            NoteSyncPageMessage.prototype.isLast = false;
+
+            /**
+             * Creates a new NoteSyncPageMessage instance using the specified properties.
+             * @function create
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {proto.v1.NoteSyncPageMessage.$Properties=} [properties] Properties to set
+             * @returns {proto.v1.NoteSyncPageMessage} NoteSyncPageMessage instance
+             * @type {{
+             *   (properties: proto.v1.NoteSyncPageMessage.$Shape): proto.v1.NoteSyncPageMessage & proto.v1.NoteSyncPageMessage.$Shape;
+             *   (properties?: proto.v1.NoteSyncPageMessage.$Properties): proto.v1.NoteSyncPageMessage;
+             * }}
+             */
+            NoteSyncPageMessage.create = function(properties) {
+                return new NoteSyncPageMessage(properties);
+            };
+
+            /**
+             * Encodes the specified NoteSyncPageMessage message. Does not implicitly {@link proto.v1.NoteSyncPageMessage.verify|verify} messages.
+             * @function encode
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {proto.v1.NoteSyncPageMessage.$Properties} message NoteSyncPageMessage message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            NoteSyncPageMessage.encode = function (message, writer, _depth) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.context);
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.pageIndex);
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pageSize);
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    writer.uint32(/* id 4, wireType 0 =*/32).int32(message.totalCount);
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    writer.uint32(/* id 5, wireType 0 =*/40).bool(message.isLast);
+                if (message.$unknowns != null && $Object.hasOwnProperty.call(message, "$unknowns"))
+                    for (let i = 0; i < message.$unknowns.length; ++i)
+                        writer.raw(message.$unknowns[i]);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified NoteSyncPageMessage message, length delimited. Does not implicitly {@link proto.v1.NoteSyncPageMessage.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {proto.v1.NoteSyncPageMessage.$Properties} message NoteSyncPageMessage message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            NoteSyncPageMessage.encodeDelimited = function(message, writer) {
+                return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+            };
+
+            /**
+             * Decodes a NoteSyncPageMessage message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.v1.NoteSyncPageMessage & proto.v1.NoteSyncPageMessage.$Shape} NoteSyncPageMessage
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            NoteSyncPageMessage.decode = function (reader, length, _end, _depth, _target) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $Reader.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let end = length === $undefined ? reader.len : reader.pos + length, message = _target || new $root.proto.v1.NoteSyncPageMessage(), value;
+                while (reader.pos < end) {
+                    let start = reader.pos;
+                    let tag = reader.tag();
+                    if (tag === _end) {
+                        _end = $undefined;
+                        break;
+                    }
+                    let wireType = tag & 7;
+                    switch (tag >>>= 3) {
+                    case 1: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.context = value;
+                            else
+                                delete message.context;
+                            continue;
+                        }
+                    case 2: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageIndex = value;
+                            else
+                                delete message.pageIndex;
+                            continue;
+                        }
+                    case 3: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageSize = value;
+                            else
+                                delete message.pageSize;
+                            continue;
+                        }
+                    case 4: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.totalCount = value;
+                            else
+                                delete message.totalCount;
+                            continue;
+                        }
+                    case 5: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.bool())
+                                message.isLast = value;
+                            else
+                                delete message.isLast;
+                            continue;
+                        }
+                    }
+                    reader.skipType(wireType, _depth, tag);
+                    if (!reader.discardUnknown) {
+                        $util.makeProp(message, "$unknowns", false);
+                        (message.$unknowns || (message.$unknowns = [])).push(reader.raw(start, reader.pos));
+                    }
+                }
+                if (_end !== $undefined)
+                    throw $Error("missing end group");
+                return message;
+            };
+
+            /**
+             * Decodes a NoteSyncPageMessage message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.v1.NoteSyncPageMessage & proto.v1.NoteSyncPageMessage.$Shape} NoteSyncPageMessage
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            NoteSyncPageMessage.decodeDelimited = function(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a NoteSyncPageMessage message.
+             * @function verify
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            NoteSyncPageMessage.verify = function (message, _depth) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    return "max depth exceeded";
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    if (!$util.isString(message.context))
+                        return "context: string expected";
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    if (!$util.isInteger(message.pageIndex))
+                        return "pageIndex: integer expected";
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    if (!$util.isInteger(message.pageSize))
+                        return "pageSize: integer expected";
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    if (!$util.isInteger(message.totalCount))
+                        return "totalCount: integer expected";
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    if (typeof message.isLast !== "boolean")
+                        return "isLast: boolean expected";
+                return null;
+            };
+
+            /**
+             * Creates a NoteSyncPageMessage message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.v1.NoteSyncPageMessage} NoteSyncPageMessage
+             */
+            NoteSyncPageMessage.fromObject = function (object, _depth) {
+                if (object instanceof $root.proto.v1.NoteSyncPageMessage)
+                    return object;
+                if (!$util.isObject(object))
+                    throw $TypeError(".proto.v1.NoteSyncPageMessage: object expected");
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let message = new $root.proto.v1.NoteSyncPageMessage();
+                if (object.context != null)
+                    if (typeof object.context !== "string" || object.context.length)
+                        message.context = $String(object.context);
+                if (object.pageIndex != null)
+                    if ($Number(object.pageIndex) !== 0)
+                        message.pageIndex = object.pageIndex | 0;
+                if (object.pageSize != null)
+                    if ($Number(object.pageSize) !== 0)
+                        message.pageSize = object.pageSize | 0;
+                if (object.totalCount != null)
+                    if ($Number(object.totalCount) !== 0)
+                        message.totalCount = object.totalCount | 0;
+                if (object.isLast != null)
+                    if (object.isLast)
+                        message.isLast = $Boolean(object.isLast);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a NoteSyncPageMessage message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {proto.v1.NoteSyncPageMessage} message NoteSyncPageMessage
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            NoteSyncPageMessage.toObject = function (message, options, _depth) {
+                if (!options)
+                    options = {};
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let object = {};
+                if (options.defaults) {
+                    object.context = "";
+                    object.pageIndex = 0;
+                    object.pageSize = 0;
+                    object.totalCount = 0;
+                    object.isLast = false;
+                }
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    object.context = message.context;
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    object.pageIndex = message.pageIndex;
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    object.pageSize = message.pageSize;
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    object.totalCount = message.totalCount;
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    object.isLast = message.isLast;
+                return object;
+            };
+
+            /**
+             * Converts this NoteSyncPageMessage to JSON.
+             * @function toJSON
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            NoteSyncPageMessage.prototype.toJSON = function() {
+                return NoteSyncPageMessage.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the type url for NoteSyncPageMessage
+             * @function getTypeUrl
+             * @memberof proto.v1.NoteSyncPageMessage
+             * @static
+             * @param {string} [prefix] Custom type url prefix, defaults to `"type.googleapis.com"`
+             * @returns {string} The type url
+             */
+            NoteSyncPageMessage.getTypeUrl = function(prefix) {
+                if (prefix === $undefined)
+                    prefix = "type.googleapis.com";
+                return prefix + "/proto.v1.NoteSyncPageMessage";
+            };
+
+            return NoteSyncPageMessage;
+        })();
+
+        v1.NoteSyncPageAckRequest = (function() {
+
+            /**
+             * Properties of a NoteSyncPageAckRequest.
+             * @typedef {Object} proto.v1.NoteSyncPageAckRequest.$Properties
+             * @property {string|null} [context] NoteSyncPageAckRequest context
+             * @property {string|null} [vault] NoteSyncPageAckRequest vault
+             * @property {number|null} [pageIndex] NoteSyncPageAckRequest pageIndex
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+
+            /**
+             * Properties of a NoteSyncPageAckRequest.
+             * @memberof proto.v1
+             * @interface INoteSyncPageAckRequest
+             * @augments proto.v1.NoteSyncPageAckRequest.$Properties
+             * @deprecated Use proto.v1.NoteSyncPageAckRequest.$Properties instead.
+             */
+
+            /**
+             * Shape of a NoteSyncPageAckRequest.
+             * @typedef {proto.v1.NoteSyncPageAckRequest.$Properties} proto.v1.NoteSyncPageAckRequest.$Shape
+             */
+
+            /**
+             * Constructs a new NoteSyncPageAckRequest.
+             * @memberof proto.v1
+             * @classdesc Represents a NoteSyncPageAckRequest.
+             * @constructor
+             * @param {proto.v1.NoteSyncPageAckRequest.$Properties=} [properties] Properties to set
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+            const NoteSyncPageAckRequest = function (properties) {
+                if (properties)
+                    for (let keys = $Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                            this[keys[i]] = properties[keys[i]];
+            };
+
+            /**
+             * NoteSyncPageAckRequest context.
+             * @member {string} context
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @instance
+             */
+            NoteSyncPageAckRequest.prototype.context = "";
+
+            /**
+             * NoteSyncPageAckRequest vault.
+             * @member {string} vault
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @instance
+             */
+            NoteSyncPageAckRequest.prototype.vault = "";
+
+            /**
+             * NoteSyncPageAckRequest pageIndex.
+             * @member {number} pageIndex
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @instance
+             */
+            NoteSyncPageAckRequest.prototype.pageIndex = 0;
+
+            /**
+             * Creates a new NoteSyncPageAckRequest instance using the specified properties.
+             * @function create
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {proto.v1.NoteSyncPageAckRequest.$Properties=} [properties] Properties to set
+             * @returns {proto.v1.NoteSyncPageAckRequest} NoteSyncPageAckRequest instance
+             * @type {{
+             *   (properties: proto.v1.NoteSyncPageAckRequest.$Shape): proto.v1.NoteSyncPageAckRequest & proto.v1.NoteSyncPageAckRequest.$Shape;
+             *   (properties?: proto.v1.NoteSyncPageAckRequest.$Properties): proto.v1.NoteSyncPageAckRequest;
+             * }}
+             */
+            NoteSyncPageAckRequest.create = function(properties) {
+                return new NoteSyncPageAckRequest(properties);
+            };
+
+            /**
+             * Encodes the specified NoteSyncPageAckRequest message. Does not implicitly {@link proto.v1.NoteSyncPageAckRequest.verify|verify} messages.
+             * @function encode
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {proto.v1.NoteSyncPageAckRequest.$Properties} message NoteSyncPageAckRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            NoteSyncPageAckRequest.encode = function (message, writer, _depth) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.context);
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.vault);
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pageIndex);
+                if (message.$unknowns != null && $Object.hasOwnProperty.call(message, "$unknowns"))
+                    for (let i = 0; i < message.$unknowns.length; ++i)
+                        writer.raw(message.$unknowns[i]);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified NoteSyncPageAckRequest message, length delimited. Does not implicitly {@link proto.v1.NoteSyncPageAckRequest.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {proto.v1.NoteSyncPageAckRequest.$Properties} message NoteSyncPageAckRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            NoteSyncPageAckRequest.encodeDelimited = function(message, writer) {
+                return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+            };
+
+            /**
+             * Decodes a NoteSyncPageAckRequest message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.v1.NoteSyncPageAckRequest & proto.v1.NoteSyncPageAckRequest.$Shape} NoteSyncPageAckRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            NoteSyncPageAckRequest.decode = function (reader, length, _end, _depth, _target) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $Reader.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let end = length === $undefined ? reader.len : reader.pos + length, message = _target || new $root.proto.v1.NoteSyncPageAckRequest(), value;
+                while (reader.pos < end) {
+                    let start = reader.pos;
+                    let tag = reader.tag();
+                    if (tag === _end) {
+                        _end = $undefined;
+                        break;
+                    }
+                    let wireType = tag & 7;
+                    switch (tag >>>= 3) {
+                    case 1: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.context = value;
+                            else
+                                delete message.context;
+                            continue;
+                        }
+                    case 2: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.vault = value;
+                            else
+                                delete message.vault;
+                            continue;
+                        }
+                    case 3: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageIndex = value;
+                            else
+                                delete message.pageIndex;
+                            continue;
+                        }
+                    }
+                    reader.skipType(wireType, _depth, tag);
+                    if (!reader.discardUnknown) {
+                        $util.makeProp(message, "$unknowns", false);
+                        (message.$unknowns || (message.$unknowns = [])).push(reader.raw(start, reader.pos));
+                    }
+                }
+                if (_end !== $undefined)
+                    throw $Error("missing end group");
+                return message;
+            };
+
+            /**
+             * Decodes a NoteSyncPageAckRequest message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.v1.NoteSyncPageAckRequest & proto.v1.NoteSyncPageAckRequest.$Shape} NoteSyncPageAckRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            NoteSyncPageAckRequest.decodeDelimited = function(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a NoteSyncPageAckRequest message.
+             * @function verify
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            NoteSyncPageAckRequest.verify = function (message, _depth) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    return "max depth exceeded";
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    if (!$util.isString(message.context))
+                        return "context: string expected";
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    if (!$util.isString(message.vault))
+                        return "vault: string expected";
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    if (!$util.isInteger(message.pageIndex))
+                        return "pageIndex: integer expected";
+                return null;
+            };
+
+            /**
+             * Creates a NoteSyncPageAckRequest message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.v1.NoteSyncPageAckRequest} NoteSyncPageAckRequest
+             */
+            NoteSyncPageAckRequest.fromObject = function (object, _depth) {
+                if (object instanceof $root.proto.v1.NoteSyncPageAckRequest)
+                    return object;
+                if (!$util.isObject(object))
+                    throw $TypeError(".proto.v1.NoteSyncPageAckRequest: object expected");
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let message = new $root.proto.v1.NoteSyncPageAckRequest();
+                if (object.context != null)
+                    if (typeof object.context !== "string" || object.context.length)
+                        message.context = $String(object.context);
+                if (object.vault != null)
+                    if (typeof object.vault !== "string" || object.vault.length)
+                        message.vault = $String(object.vault);
+                if (object.pageIndex != null)
+                    if ($Number(object.pageIndex) !== 0)
+                        message.pageIndex = object.pageIndex | 0;
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a NoteSyncPageAckRequest message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {proto.v1.NoteSyncPageAckRequest} message NoteSyncPageAckRequest
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            NoteSyncPageAckRequest.toObject = function (message, options, _depth) {
+                if (!options)
+                    options = {};
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let object = {};
+                if (options.defaults) {
+                    object.context = "";
+                    object.vault = "";
+                    object.pageIndex = 0;
+                }
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    object.context = message.context;
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    object.vault = message.vault;
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    object.pageIndex = message.pageIndex;
+                return object;
+            };
+
+            /**
+             * Converts this NoteSyncPageAckRequest to JSON.
+             * @function toJSON
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            NoteSyncPageAckRequest.prototype.toJSON = function() {
+                return NoteSyncPageAckRequest.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the type url for NoteSyncPageAckRequest
+             * @function getTypeUrl
+             * @memberof proto.v1.NoteSyncPageAckRequest
+             * @static
+             * @param {string} [prefix] Custom type url prefix, defaults to `"type.googleapis.com"`
+             * @returns {string} The type url
+             */
+            NoteSyncPageAckRequest.getTypeUrl = function(prefix) {
+                if (prefix === $undefined)
+                    prefix = "type.googleapis.com";
+                return prefix + "/proto.v1.NoteSyncPageAckRequest";
+            };
+
+            return NoteSyncPageAckRequest;
+        })();
+
+        v1.FileSyncPageMessage = (function() {
+
+            /**
+             * Properties of a FileSyncPageMessage.
+             * @typedef {Object} proto.v1.FileSyncPageMessage.$Properties
+             * @property {string|null} [context] FileSyncPageMessage context
+             * @property {number|null} [pageIndex] FileSyncPageMessage pageIndex
+             * @property {number|null} [pageSize] FileSyncPageMessage pageSize
+             * @property {number|null} [totalCount] FileSyncPageMessage totalCount
+             * @property {boolean|null} [isLast] FileSyncPageMessage isLast
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+
+            /**
+             * Properties of a FileSyncPageMessage.
+             * @memberof proto.v1
+             * @interface IFileSyncPageMessage
+             * @augments proto.v1.FileSyncPageMessage.$Properties
+             * @deprecated Use proto.v1.FileSyncPageMessage.$Properties instead.
+             */
+
+            /**
+             * Shape of a FileSyncPageMessage.
+             * @typedef {proto.v1.FileSyncPageMessage.$Properties} proto.v1.FileSyncPageMessage.$Shape
+             */
+
+            /**
+             * Constructs a new FileSyncPageMessage.
+             * @memberof proto.v1
+             * @classdesc Represents a FileSyncPageMessage.
+             * @constructor
+             * @param {proto.v1.FileSyncPageMessage.$Properties=} [properties] Properties to set
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+            const FileSyncPageMessage = function (properties) {
+                if (properties)
+                    for (let keys = $Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                            this[keys[i]] = properties[keys[i]];
+            };
+
+            /**
+             * FileSyncPageMessage context.
+             * @member {string} context
+             * @memberof proto.v1.FileSyncPageMessage
+             * @instance
+             */
+            FileSyncPageMessage.prototype.context = "";
+
+            /**
+             * FileSyncPageMessage pageIndex.
+             * @member {number} pageIndex
+             * @memberof proto.v1.FileSyncPageMessage
+             * @instance
+             */
+            FileSyncPageMessage.prototype.pageIndex = 0;
+
+            /**
+             * FileSyncPageMessage pageSize.
+             * @member {number} pageSize
+             * @memberof proto.v1.FileSyncPageMessage
+             * @instance
+             */
+            FileSyncPageMessage.prototype.pageSize = 0;
+
+            /**
+             * FileSyncPageMessage totalCount.
+             * @member {number} totalCount
+             * @memberof proto.v1.FileSyncPageMessage
+             * @instance
+             */
+            FileSyncPageMessage.prototype.totalCount = 0;
+
+            /**
+             * FileSyncPageMessage isLast.
+             * @member {boolean} isLast
+             * @memberof proto.v1.FileSyncPageMessage
+             * @instance
+             */
+            FileSyncPageMessage.prototype.isLast = false;
+
+            /**
+             * Creates a new FileSyncPageMessage instance using the specified properties.
+             * @function create
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {proto.v1.FileSyncPageMessage.$Properties=} [properties] Properties to set
+             * @returns {proto.v1.FileSyncPageMessage} FileSyncPageMessage instance
+             * @type {{
+             *   (properties: proto.v1.FileSyncPageMessage.$Shape): proto.v1.FileSyncPageMessage & proto.v1.FileSyncPageMessage.$Shape;
+             *   (properties?: proto.v1.FileSyncPageMessage.$Properties): proto.v1.FileSyncPageMessage;
+             * }}
+             */
+            FileSyncPageMessage.create = function(properties) {
+                return new FileSyncPageMessage(properties);
+            };
+
+            /**
+             * Encodes the specified FileSyncPageMessage message. Does not implicitly {@link proto.v1.FileSyncPageMessage.verify|verify} messages.
+             * @function encode
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {proto.v1.FileSyncPageMessage.$Properties} message FileSyncPageMessage message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            FileSyncPageMessage.encode = function (message, writer, _depth) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.context);
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.pageIndex);
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pageSize);
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    writer.uint32(/* id 4, wireType 0 =*/32).int32(message.totalCount);
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    writer.uint32(/* id 5, wireType 0 =*/40).bool(message.isLast);
+                if (message.$unknowns != null && $Object.hasOwnProperty.call(message, "$unknowns"))
+                    for (let i = 0; i < message.$unknowns.length; ++i)
+                        writer.raw(message.$unknowns[i]);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified FileSyncPageMessage message, length delimited. Does not implicitly {@link proto.v1.FileSyncPageMessage.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {proto.v1.FileSyncPageMessage.$Properties} message FileSyncPageMessage message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            FileSyncPageMessage.encodeDelimited = function(message, writer) {
+                return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+            };
+
+            /**
+             * Decodes a FileSyncPageMessage message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.v1.FileSyncPageMessage & proto.v1.FileSyncPageMessage.$Shape} FileSyncPageMessage
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            FileSyncPageMessage.decode = function (reader, length, _end, _depth, _target) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $Reader.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let end = length === $undefined ? reader.len : reader.pos + length, message = _target || new $root.proto.v1.FileSyncPageMessage(), value;
+                while (reader.pos < end) {
+                    let start = reader.pos;
+                    let tag = reader.tag();
+                    if (tag === _end) {
+                        _end = $undefined;
+                        break;
+                    }
+                    let wireType = tag & 7;
+                    switch (tag >>>= 3) {
+                    case 1: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.context = value;
+                            else
+                                delete message.context;
+                            continue;
+                        }
+                    case 2: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageIndex = value;
+                            else
+                                delete message.pageIndex;
+                            continue;
+                        }
+                    case 3: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageSize = value;
+                            else
+                                delete message.pageSize;
+                            continue;
+                        }
+                    case 4: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.totalCount = value;
+                            else
+                                delete message.totalCount;
+                            continue;
+                        }
+                    case 5: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.bool())
+                                message.isLast = value;
+                            else
+                                delete message.isLast;
+                            continue;
+                        }
+                    }
+                    reader.skipType(wireType, _depth, tag);
+                    if (!reader.discardUnknown) {
+                        $util.makeProp(message, "$unknowns", false);
+                        (message.$unknowns || (message.$unknowns = [])).push(reader.raw(start, reader.pos));
+                    }
+                }
+                if (_end !== $undefined)
+                    throw $Error("missing end group");
+                return message;
+            };
+
+            /**
+             * Decodes a FileSyncPageMessage message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.v1.FileSyncPageMessage & proto.v1.FileSyncPageMessage.$Shape} FileSyncPageMessage
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            FileSyncPageMessage.decodeDelimited = function(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a FileSyncPageMessage message.
+             * @function verify
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            FileSyncPageMessage.verify = function (message, _depth) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    return "max depth exceeded";
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    if (!$util.isString(message.context))
+                        return "context: string expected";
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    if (!$util.isInteger(message.pageIndex))
+                        return "pageIndex: integer expected";
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    if (!$util.isInteger(message.pageSize))
+                        return "pageSize: integer expected";
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    if (!$util.isInteger(message.totalCount))
+                        return "totalCount: integer expected";
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    if (typeof message.isLast !== "boolean")
+                        return "isLast: boolean expected";
+                return null;
+            };
+
+            /**
+             * Creates a FileSyncPageMessage message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.v1.FileSyncPageMessage} FileSyncPageMessage
+             */
+            FileSyncPageMessage.fromObject = function (object, _depth) {
+                if (object instanceof $root.proto.v1.FileSyncPageMessage)
+                    return object;
+                if (!$util.isObject(object))
+                    throw $TypeError(".proto.v1.FileSyncPageMessage: object expected");
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let message = new $root.proto.v1.FileSyncPageMessage();
+                if (object.context != null)
+                    if (typeof object.context !== "string" || object.context.length)
+                        message.context = $String(object.context);
+                if (object.pageIndex != null)
+                    if ($Number(object.pageIndex) !== 0)
+                        message.pageIndex = object.pageIndex | 0;
+                if (object.pageSize != null)
+                    if ($Number(object.pageSize) !== 0)
+                        message.pageSize = object.pageSize | 0;
+                if (object.totalCount != null)
+                    if ($Number(object.totalCount) !== 0)
+                        message.totalCount = object.totalCount | 0;
+                if (object.isLast != null)
+                    if (object.isLast)
+                        message.isLast = $Boolean(object.isLast);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a FileSyncPageMessage message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {proto.v1.FileSyncPageMessage} message FileSyncPageMessage
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            FileSyncPageMessage.toObject = function (message, options, _depth) {
+                if (!options)
+                    options = {};
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let object = {};
+                if (options.defaults) {
+                    object.context = "";
+                    object.pageIndex = 0;
+                    object.pageSize = 0;
+                    object.totalCount = 0;
+                    object.isLast = false;
+                }
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    object.context = message.context;
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    object.pageIndex = message.pageIndex;
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    object.pageSize = message.pageSize;
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    object.totalCount = message.totalCount;
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    object.isLast = message.isLast;
+                return object;
+            };
+
+            /**
+             * Converts this FileSyncPageMessage to JSON.
+             * @function toJSON
+             * @memberof proto.v1.FileSyncPageMessage
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            FileSyncPageMessage.prototype.toJSON = function() {
+                return FileSyncPageMessage.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the type url for FileSyncPageMessage
+             * @function getTypeUrl
+             * @memberof proto.v1.FileSyncPageMessage
+             * @static
+             * @param {string} [prefix] Custom type url prefix, defaults to `"type.googleapis.com"`
+             * @returns {string} The type url
+             */
+            FileSyncPageMessage.getTypeUrl = function(prefix) {
+                if (prefix === $undefined)
+                    prefix = "type.googleapis.com";
+                return prefix + "/proto.v1.FileSyncPageMessage";
+            };
+
+            return FileSyncPageMessage;
+        })();
+
+        v1.FileSyncPageAckRequest = (function() {
+
+            /**
+             * Properties of a FileSyncPageAckRequest.
+             * @typedef {Object} proto.v1.FileSyncPageAckRequest.$Properties
+             * @property {string|null} [context] FileSyncPageAckRequest context
+             * @property {string|null} [vault] FileSyncPageAckRequest vault
+             * @property {number|null} [pageIndex] FileSyncPageAckRequest pageIndex
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+
+            /**
+             * Properties of a FileSyncPageAckRequest.
+             * @memberof proto.v1
+             * @interface IFileSyncPageAckRequest
+             * @augments proto.v1.FileSyncPageAckRequest.$Properties
+             * @deprecated Use proto.v1.FileSyncPageAckRequest.$Properties instead.
+             */
+
+            /**
+             * Shape of a FileSyncPageAckRequest.
+             * @typedef {proto.v1.FileSyncPageAckRequest.$Properties} proto.v1.FileSyncPageAckRequest.$Shape
+             */
+
+            /**
+             * Constructs a new FileSyncPageAckRequest.
+             * @memberof proto.v1
+             * @classdesc Represents a FileSyncPageAckRequest.
+             * @constructor
+             * @param {proto.v1.FileSyncPageAckRequest.$Properties=} [properties] Properties to set
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+            const FileSyncPageAckRequest = function (properties) {
+                if (properties)
+                    for (let keys = $Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                            this[keys[i]] = properties[keys[i]];
+            };
+
+            /**
+             * FileSyncPageAckRequest context.
+             * @member {string} context
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @instance
+             */
+            FileSyncPageAckRequest.prototype.context = "";
+
+            /**
+             * FileSyncPageAckRequest vault.
+             * @member {string} vault
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @instance
+             */
+            FileSyncPageAckRequest.prototype.vault = "";
+
+            /**
+             * FileSyncPageAckRequest pageIndex.
+             * @member {number} pageIndex
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @instance
+             */
+            FileSyncPageAckRequest.prototype.pageIndex = 0;
+
+            /**
+             * Creates a new FileSyncPageAckRequest instance using the specified properties.
+             * @function create
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {proto.v1.FileSyncPageAckRequest.$Properties=} [properties] Properties to set
+             * @returns {proto.v1.FileSyncPageAckRequest} FileSyncPageAckRequest instance
+             * @type {{
+             *   (properties: proto.v1.FileSyncPageAckRequest.$Shape): proto.v1.FileSyncPageAckRequest & proto.v1.FileSyncPageAckRequest.$Shape;
+             *   (properties?: proto.v1.FileSyncPageAckRequest.$Properties): proto.v1.FileSyncPageAckRequest;
+             * }}
+             */
+            FileSyncPageAckRequest.create = function(properties) {
+                return new FileSyncPageAckRequest(properties);
+            };
+
+            /**
+             * Encodes the specified FileSyncPageAckRequest message. Does not implicitly {@link proto.v1.FileSyncPageAckRequest.verify|verify} messages.
+             * @function encode
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {proto.v1.FileSyncPageAckRequest.$Properties} message FileSyncPageAckRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            FileSyncPageAckRequest.encode = function (message, writer, _depth) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.context);
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.vault);
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pageIndex);
+                if (message.$unknowns != null && $Object.hasOwnProperty.call(message, "$unknowns"))
+                    for (let i = 0; i < message.$unknowns.length; ++i)
+                        writer.raw(message.$unknowns[i]);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified FileSyncPageAckRequest message, length delimited. Does not implicitly {@link proto.v1.FileSyncPageAckRequest.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {proto.v1.FileSyncPageAckRequest.$Properties} message FileSyncPageAckRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            FileSyncPageAckRequest.encodeDelimited = function(message, writer) {
+                return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+            };
+
+            /**
+             * Decodes a FileSyncPageAckRequest message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.v1.FileSyncPageAckRequest & proto.v1.FileSyncPageAckRequest.$Shape} FileSyncPageAckRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            FileSyncPageAckRequest.decode = function (reader, length, _end, _depth, _target) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $Reader.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let end = length === $undefined ? reader.len : reader.pos + length, message = _target || new $root.proto.v1.FileSyncPageAckRequest(), value;
+                while (reader.pos < end) {
+                    let start = reader.pos;
+                    let tag = reader.tag();
+                    if (tag === _end) {
+                        _end = $undefined;
+                        break;
+                    }
+                    let wireType = tag & 7;
+                    switch (tag >>>= 3) {
+                    case 1: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.context = value;
+                            else
+                                delete message.context;
+                            continue;
+                        }
+                    case 2: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.vault = value;
+                            else
+                                delete message.vault;
+                            continue;
+                        }
+                    case 3: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageIndex = value;
+                            else
+                                delete message.pageIndex;
+                            continue;
+                        }
+                    }
+                    reader.skipType(wireType, _depth, tag);
+                    if (!reader.discardUnknown) {
+                        $util.makeProp(message, "$unknowns", false);
+                        (message.$unknowns || (message.$unknowns = [])).push(reader.raw(start, reader.pos));
+                    }
+                }
+                if (_end !== $undefined)
+                    throw $Error("missing end group");
+                return message;
+            };
+
+            /**
+             * Decodes a FileSyncPageAckRequest message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.v1.FileSyncPageAckRequest & proto.v1.FileSyncPageAckRequest.$Shape} FileSyncPageAckRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            FileSyncPageAckRequest.decodeDelimited = function(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a FileSyncPageAckRequest message.
+             * @function verify
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            FileSyncPageAckRequest.verify = function (message, _depth) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    return "max depth exceeded";
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    if (!$util.isString(message.context))
+                        return "context: string expected";
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    if (!$util.isString(message.vault))
+                        return "vault: string expected";
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    if (!$util.isInteger(message.pageIndex))
+                        return "pageIndex: integer expected";
+                return null;
+            };
+
+            /**
+             * Creates a FileSyncPageAckRequest message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.v1.FileSyncPageAckRequest} FileSyncPageAckRequest
+             */
+            FileSyncPageAckRequest.fromObject = function (object, _depth) {
+                if (object instanceof $root.proto.v1.FileSyncPageAckRequest)
+                    return object;
+                if (!$util.isObject(object))
+                    throw $TypeError(".proto.v1.FileSyncPageAckRequest: object expected");
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let message = new $root.proto.v1.FileSyncPageAckRequest();
+                if (object.context != null)
+                    if (typeof object.context !== "string" || object.context.length)
+                        message.context = $String(object.context);
+                if (object.vault != null)
+                    if (typeof object.vault !== "string" || object.vault.length)
+                        message.vault = $String(object.vault);
+                if (object.pageIndex != null)
+                    if ($Number(object.pageIndex) !== 0)
+                        message.pageIndex = object.pageIndex | 0;
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a FileSyncPageAckRequest message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {proto.v1.FileSyncPageAckRequest} message FileSyncPageAckRequest
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            FileSyncPageAckRequest.toObject = function (message, options, _depth) {
+                if (!options)
+                    options = {};
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let object = {};
+                if (options.defaults) {
+                    object.context = "";
+                    object.vault = "";
+                    object.pageIndex = 0;
+                }
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    object.context = message.context;
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    object.vault = message.vault;
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    object.pageIndex = message.pageIndex;
+                return object;
+            };
+
+            /**
+             * Converts this FileSyncPageAckRequest to JSON.
+             * @function toJSON
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            FileSyncPageAckRequest.prototype.toJSON = function() {
+                return FileSyncPageAckRequest.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the type url for FileSyncPageAckRequest
+             * @function getTypeUrl
+             * @memberof proto.v1.FileSyncPageAckRequest
+             * @static
+             * @param {string} [prefix] Custom type url prefix, defaults to `"type.googleapis.com"`
+             * @returns {string} The type url
+             */
+            FileSyncPageAckRequest.getTypeUrl = function(prefix) {
+                if (prefix === $undefined)
+                    prefix = "type.googleapis.com";
+                return prefix + "/proto.v1.FileSyncPageAckRequest";
+            };
+
+            return FileSyncPageAckRequest;
+        })();
+
+        v1.SettingSyncPageMessage = (function() {
+
+            /**
+             * Properties of a SettingSyncPageMessage.
+             * @typedef {Object} proto.v1.SettingSyncPageMessage.$Properties
+             * @property {string|null} [context] SettingSyncPageMessage context
+             * @property {number|null} [pageIndex] SettingSyncPageMessage pageIndex
+             * @property {number|null} [pageSize] SettingSyncPageMessage pageSize
+             * @property {number|null} [totalCount] SettingSyncPageMessage totalCount
+             * @property {boolean|null} [isLast] SettingSyncPageMessage isLast
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+
+            /**
+             * Properties of a SettingSyncPageMessage.
+             * @memberof proto.v1
+             * @interface ISettingSyncPageMessage
+             * @augments proto.v1.SettingSyncPageMessage.$Properties
+             * @deprecated Use proto.v1.SettingSyncPageMessage.$Properties instead.
+             */
+
+            /**
+             * Shape of a SettingSyncPageMessage.
+             * @typedef {proto.v1.SettingSyncPageMessage.$Properties} proto.v1.SettingSyncPageMessage.$Shape
+             */
+
+            /**
+             * Constructs a new SettingSyncPageMessage.
+             * @memberof proto.v1
+             * @classdesc Represents a SettingSyncPageMessage.
+             * @constructor
+             * @param {proto.v1.SettingSyncPageMessage.$Properties=} [properties] Properties to set
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+            const SettingSyncPageMessage = function (properties) {
+                if (properties)
+                    for (let keys = $Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                            this[keys[i]] = properties[keys[i]];
+            };
+
+            /**
+             * SettingSyncPageMessage context.
+             * @member {string} context
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @instance
+             */
+            SettingSyncPageMessage.prototype.context = "";
+
+            /**
+             * SettingSyncPageMessage pageIndex.
+             * @member {number} pageIndex
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @instance
+             */
+            SettingSyncPageMessage.prototype.pageIndex = 0;
+
+            /**
+             * SettingSyncPageMessage pageSize.
+             * @member {number} pageSize
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @instance
+             */
+            SettingSyncPageMessage.prototype.pageSize = 0;
+
+            /**
+             * SettingSyncPageMessage totalCount.
+             * @member {number} totalCount
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @instance
+             */
+            SettingSyncPageMessage.prototype.totalCount = 0;
+
+            /**
+             * SettingSyncPageMessage isLast.
+             * @member {boolean} isLast
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @instance
+             */
+            SettingSyncPageMessage.prototype.isLast = false;
+
+            /**
+             * Creates a new SettingSyncPageMessage instance using the specified properties.
+             * @function create
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {proto.v1.SettingSyncPageMessage.$Properties=} [properties] Properties to set
+             * @returns {proto.v1.SettingSyncPageMessage} SettingSyncPageMessage instance
+             * @type {{
+             *   (properties: proto.v1.SettingSyncPageMessage.$Shape): proto.v1.SettingSyncPageMessage & proto.v1.SettingSyncPageMessage.$Shape;
+             *   (properties?: proto.v1.SettingSyncPageMessage.$Properties): proto.v1.SettingSyncPageMessage;
+             * }}
+             */
+            SettingSyncPageMessage.create = function(properties) {
+                return new SettingSyncPageMessage(properties);
+            };
+
+            /**
+             * Encodes the specified SettingSyncPageMessage message. Does not implicitly {@link proto.v1.SettingSyncPageMessage.verify|verify} messages.
+             * @function encode
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {proto.v1.SettingSyncPageMessage.$Properties} message SettingSyncPageMessage message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            SettingSyncPageMessage.encode = function (message, writer, _depth) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.context);
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.pageIndex);
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pageSize);
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    writer.uint32(/* id 4, wireType 0 =*/32).int32(message.totalCount);
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    writer.uint32(/* id 5, wireType 0 =*/40).bool(message.isLast);
+                if (message.$unknowns != null && $Object.hasOwnProperty.call(message, "$unknowns"))
+                    for (let i = 0; i < message.$unknowns.length; ++i)
+                        writer.raw(message.$unknowns[i]);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified SettingSyncPageMessage message, length delimited. Does not implicitly {@link proto.v1.SettingSyncPageMessage.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {proto.v1.SettingSyncPageMessage.$Properties} message SettingSyncPageMessage message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            SettingSyncPageMessage.encodeDelimited = function(message, writer) {
+                return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+            };
+
+            /**
+             * Decodes a SettingSyncPageMessage message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.v1.SettingSyncPageMessage & proto.v1.SettingSyncPageMessage.$Shape} SettingSyncPageMessage
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            SettingSyncPageMessage.decode = function (reader, length, _end, _depth, _target) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $Reader.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let end = length === $undefined ? reader.len : reader.pos + length, message = _target || new $root.proto.v1.SettingSyncPageMessage(), value;
+                while (reader.pos < end) {
+                    let start = reader.pos;
+                    let tag = reader.tag();
+                    if (tag === _end) {
+                        _end = $undefined;
+                        break;
+                    }
+                    let wireType = tag & 7;
+                    switch (tag >>>= 3) {
+                    case 1: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.context = value;
+                            else
+                                delete message.context;
+                            continue;
+                        }
+                    case 2: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageIndex = value;
+                            else
+                                delete message.pageIndex;
+                            continue;
+                        }
+                    case 3: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageSize = value;
+                            else
+                                delete message.pageSize;
+                            continue;
+                        }
+                    case 4: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.totalCount = value;
+                            else
+                                delete message.totalCount;
+                            continue;
+                        }
+                    case 5: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.bool())
+                                message.isLast = value;
+                            else
+                                delete message.isLast;
+                            continue;
+                        }
+                    }
+                    reader.skipType(wireType, _depth, tag);
+                    if (!reader.discardUnknown) {
+                        $util.makeProp(message, "$unknowns", false);
+                        (message.$unknowns || (message.$unknowns = [])).push(reader.raw(start, reader.pos));
+                    }
+                }
+                if (_end !== $undefined)
+                    throw $Error("missing end group");
+                return message;
+            };
+
+            /**
+             * Decodes a SettingSyncPageMessage message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.v1.SettingSyncPageMessage & proto.v1.SettingSyncPageMessage.$Shape} SettingSyncPageMessage
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            SettingSyncPageMessage.decodeDelimited = function(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a SettingSyncPageMessage message.
+             * @function verify
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            SettingSyncPageMessage.verify = function (message, _depth) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    return "max depth exceeded";
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    if (!$util.isString(message.context))
+                        return "context: string expected";
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    if (!$util.isInteger(message.pageIndex))
+                        return "pageIndex: integer expected";
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    if (!$util.isInteger(message.pageSize))
+                        return "pageSize: integer expected";
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    if (!$util.isInteger(message.totalCount))
+                        return "totalCount: integer expected";
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    if (typeof message.isLast !== "boolean")
+                        return "isLast: boolean expected";
+                return null;
+            };
+
+            /**
+             * Creates a SettingSyncPageMessage message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.v1.SettingSyncPageMessage} SettingSyncPageMessage
+             */
+            SettingSyncPageMessage.fromObject = function (object, _depth) {
+                if (object instanceof $root.proto.v1.SettingSyncPageMessage)
+                    return object;
+                if (!$util.isObject(object))
+                    throw $TypeError(".proto.v1.SettingSyncPageMessage: object expected");
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let message = new $root.proto.v1.SettingSyncPageMessage();
+                if (object.context != null)
+                    if (typeof object.context !== "string" || object.context.length)
+                        message.context = $String(object.context);
+                if (object.pageIndex != null)
+                    if ($Number(object.pageIndex) !== 0)
+                        message.pageIndex = object.pageIndex | 0;
+                if (object.pageSize != null)
+                    if ($Number(object.pageSize) !== 0)
+                        message.pageSize = object.pageSize | 0;
+                if (object.totalCount != null)
+                    if ($Number(object.totalCount) !== 0)
+                        message.totalCount = object.totalCount | 0;
+                if (object.isLast != null)
+                    if (object.isLast)
+                        message.isLast = $Boolean(object.isLast);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a SettingSyncPageMessage message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {proto.v1.SettingSyncPageMessage} message SettingSyncPageMessage
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            SettingSyncPageMessage.toObject = function (message, options, _depth) {
+                if (!options)
+                    options = {};
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let object = {};
+                if (options.defaults) {
+                    object.context = "";
+                    object.pageIndex = 0;
+                    object.pageSize = 0;
+                    object.totalCount = 0;
+                    object.isLast = false;
+                }
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    object.context = message.context;
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    object.pageIndex = message.pageIndex;
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    object.pageSize = message.pageSize;
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    object.totalCount = message.totalCount;
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    object.isLast = message.isLast;
+                return object;
+            };
+
+            /**
+             * Converts this SettingSyncPageMessage to JSON.
+             * @function toJSON
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            SettingSyncPageMessage.prototype.toJSON = function() {
+                return SettingSyncPageMessage.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the type url for SettingSyncPageMessage
+             * @function getTypeUrl
+             * @memberof proto.v1.SettingSyncPageMessage
+             * @static
+             * @param {string} [prefix] Custom type url prefix, defaults to `"type.googleapis.com"`
+             * @returns {string} The type url
+             */
+            SettingSyncPageMessage.getTypeUrl = function(prefix) {
+                if (prefix === $undefined)
+                    prefix = "type.googleapis.com";
+                return prefix + "/proto.v1.SettingSyncPageMessage";
+            };
+
+            return SettingSyncPageMessage;
+        })();
+
+        v1.SettingSyncPageAckRequest = (function() {
+
+            /**
+             * Properties of a SettingSyncPageAckRequest.
+             * @typedef {Object} proto.v1.SettingSyncPageAckRequest.$Properties
+             * @property {string|null} [context] SettingSyncPageAckRequest context
+             * @property {string|null} [vault] SettingSyncPageAckRequest vault
+             * @property {number|null} [pageIndex] SettingSyncPageAckRequest pageIndex
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+
+            /**
+             * Properties of a SettingSyncPageAckRequest.
+             * @memberof proto.v1
+             * @interface ISettingSyncPageAckRequest
+             * @augments proto.v1.SettingSyncPageAckRequest.$Properties
+             * @deprecated Use proto.v1.SettingSyncPageAckRequest.$Properties instead.
+             */
+
+            /**
+             * Shape of a SettingSyncPageAckRequest.
+             * @typedef {proto.v1.SettingSyncPageAckRequest.$Properties} proto.v1.SettingSyncPageAckRequest.$Shape
+             */
+
+            /**
+             * Constructs a new SettingSyncPageAckRequest.
+             * @memberof proto.v1
+             * @classdesc Represents a SettingSyncPageAckRequest.
+             * @constructor
+             * @param {proto.v1.SettingSyncPageAckRequest.$Properties=} [properties] Properties to set
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+            const SettingSyncPageAckRequest = function (properties) {
+                if (properties)
+                    for (let keys = $Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                            this[keys[i]] = properties[keys[i]];
+            };
+
+            /**
+             * SettingSyncPageAckRequest context.
+             * @member {string} context
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @instance
+             */
+            SettingSyncPageAckRequest.prototype.context = "";
+
+            /**
+             * SettingSyncPageAckRequest vault.
+             * @member {string} vault
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @instance
+             */
+            SettingSyncPageAckRequest.prototype.vault = "";
+
+            /**
+             * SettingSyncPageAckRequest pageIndex.
+             * @member {number} pageIndex
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @instance
+             */
+            SettingSyncPageAckRequest.prototype.pageIndex = 0;
+
+            /**
+             * Creates a new SettingSyncPageAckRequest instance using the specified properties.
+             * @function create
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {proto.v1.SettingSyncPageAckRequest.$Properties=} [properties] Properties to set
+             * @returns {proto.v1.SettingSyncPageAckRequest} SettingSyncPageAckRequest instance
+             * @type {{
+             *   (properties: proto.v1.SettingSyncPageAckRequest.$Shape): proto.v1.SettingSyncPageAckRequest & proto.v1.SettingSyncPageAckRequest.$Shape;
+             *   (properties?: proto.v1.SettingSyncPageAckRequest.$Properties): proto.v1.SettingSyncPageAckRequest;
+             * }}
+             */
+            SettingSyncPageAckRequest.create = function(properties) {
+                return new SettingSyncPageAckRequest(properties);
+            };
+
+            /**
+             * Encodes the specified SettingSyncPageAckRequest message. Does not implicitly {@link proto.v1.SettingSyncPageAckRequest.verify|verify} messages.
+             * @function encode
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {proto.v1.SettingSyncPageAckRequest.$Properties} message SettingSyncPageAckRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            SettingSyncPageAckRequest.encode = function (message, writer, _depth) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.context);
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.vault);
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pageIndex);
+                if (message.$unknowns != null && $Object.hasOwnProperty.call(message, "$unknowns"))
+                    for (let i = 0; i < message.$unknowns.length; ++i)
+                        writer.raw(message.$unknowns[i]);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified SettingSyncPageAckRequest message, length delimited. Does not implicitly {@link proto.v1.SettingSyncPageAckRequest.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {proto.v1.SettingSyncPageAckRequest.$Properties} message SettingSyncPageAckRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            SettingSyncPageAckRequest.encodeDelimited = function(message, writer) {
+                return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+            };
+
+            /**
+             * Decodes a SettingSyncPageAckRequest message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.v1.SettingSyncPageAckRequest & proto.v1.SettingSyncPageAckRequest.$Shape} SettingSyncPageAckRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            SettingSyncPageAckRequest.decode = function (reader, length, _end, _depth, _target) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $Reader.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let end = length === $undefined ? reader.len : reader.pos + length, message = _target || new $root.proto.v1.SettingSyncPageAckRequest(), value;
+                while (reader.pos < end) {
+                    let start = reader.pos;
+                    let tag = reader.tag();
+                    if (tag === _end) {
+                        _end = $undefined;
+                        break;
+                    }
+                    let wireType = tag & 7;
+                    switch (tag >>>= 3) {
+                    case 1: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.context = value;
+                            else
+                                delete message.context;
+                            continue;
+                        }
+                    case 2: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.vault = value;
+                            else
+                                delete message.vault;
+                            continue;
+                        }
+                    case 3: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageIndex = value;
+                            else
+                                delete message.pageIndex;
+                            continue;
+                        }
+                    }
+                    reader.skipType(wireType, _depth, tag);
+                    if (!reader.discardUnknown) {
+                        $util.makeProp(message, "$unknowns", false);
+                        (message.$unknowns || (message.$unknowns = [])).push(reader.raw(start, reader.pos));
+                    }
+                }
+                if (_end !== $undefined)
+                    throw $Error("missing end group");
+                return message;
+            };
+
+            /**
+             * Decodes a SettingSyncPageAckRequest message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.v1.SettingSyncPageAckRequest & proto.v1.SettingSyncPageAckRequest.$Shape} SettingSyncPageAckRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            SettingSyncPageAckRequest.decodeDelimited = function(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a SettingSyncPageAckRequest message.
+             * @function verify
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            SettingSyncPageAckRequest.verify = function (message, _depth) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    return "max depth exceeded";
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    if (!$util.isString(message.context))
+                        return "context: string expected";
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    if (!$util.isString(message.vault))
+                        return "vault: string expected";
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    if (!$util.isInteger(message.pageIndex))
+                        return "pageIndex: integer expected";
+                return null;
+            };
+
+            /**
+             * Creates a SettingSyncPageAckRequest message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.v1.SettingSyncPageAckRequest} SettingSyncPageAckRequest
+             */
+            SettingSyncPageAckRequest.fromObject = function (object, _depth) {
+                if (object instanceof $root.proto.v1.SettingSyncPageAckRequest)
+                    return object;
+                if (!$util.isObject(object))
+                    throw $TypeError(".proto.v1.SettingSyncPageAckRequest: object expected");
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let message = new $root.proto.v1.SettingSyncPageAckRequest();
+                if (object.context != null)
+                    if (typeof object.context !== "string" || object.context.length)
+                        message.context = $String(object.context);
+                if (object.vault != null)
+                    if (typeof object.vault !== "string" || object.vault.length)
+                        message.vault = $String(object.vault);
+                if (object.pageIndex != null)
+                    if ($Number(object.pageIndex) !== 0)
+                        message.pageIndex = object.pageIndex | 0;
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a SettingSyncPageAckRequest message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {proto.v1.SettingSyncPageAckRequest} message SettingSyncPageAckRequest
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            SettingSyncPageAckRequest.toObject = function (message, options, _depth) {
+                if (!options)
+                    options = {};
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let object = {};
+                if (options.defaults) {
+                    object.context = "";
+                    object.vault = "";
+                    object.pageIndex = 0;
+                }
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    object.context = message.context;
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    object.vault = message.vault;
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    object.pageIndex = message.pageIndex;
+                return object;
+            };
+
+            /**
+             * Converts this SettingSyncPageAckRequest to JSON.
+             * @function toJSON
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            SettingSyncPageAckRequest.prototype.toJSON = function() {
+                return SettingSyncPageAckRequest.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the type url for SettingSyncPageAckRequest
+             * @function getTypeUrl
+             * @memberof proto.v1.SettingSyncPageAckRequest
+             * @static
+             * @param {string} [prefix] Custom type url prefix, defaults to `"type.googleapis.com"`
+             * @returns {string} The type url
+             */
+            SettingSyncPageAckRequest.getTypeUrl = function(prefix) {
+                if (prefix === $undefined)
+                    prefix = "type.googleapis.com";
+                return prefix + "/proto.v1.SettingSyncPageAckRequest";
+            };
+
+            return SettingSyncPageAckRequest;
+        })();
+
+        v1.FolderSyncPageMessage = (function() {
+
+            /**
+             * Properties of a FolderSyncPageMessage.
+             * @typedef {Object} proto.v1.FolderSyncPageMessage.$Properties
+             * @property {string|null} [context] FolderSyncPageMessage context
+             * @property {number|null} [pageIndex] FolderSyncPageMessage pageIndex
+             * @property {number|null} [pageSize] FolderSyncPageMessage pageSize
+             * @property {number|null} [totalCount] FolderSyncPageMessage totalCount
+             * @property {boolean|null} [isLast] FolderSyncPageMessage isLast
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+
+            /**
+             * Properties of a FolderSyncPageMessage.
+             * @memberof proto.v1
+             * @interface IFolderSyncPageMessage
+             * @augments proto.v1.FolderSyncPageMessage.$Properties
+             * @deprecated Use proto.v1.FolderSyncPageMessage.$Properties instead.
+             */
+
+            /**
+             * Shape of a FolderSyncPageMessage.
+             * @typedef {proto.v1.FolderSyncPageMessage.$Properties} proto.v1.FolderSyncPageMessage.$Shape
+             */
+
+            /**
+             * Constructs a new FolderSyncPageMessage.
+             * @memberof proto.v1
+             * @classdesc Represents a FolderSyncPageMessage.
+             * @constructor
+             * @param {proto.v1.FolderSyncPageMessage.$Properties=} [properties] Properties to set
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+            const FolderSyncPageMessage = function (properties) {
+                if (properties)
+                    for (let keys = $Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                            this[keys[i]] = properties[keys[i]];
+            };
+
+            /**
+             * FolderSyncPageMessage context.
+             * @member {string} context
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @instance
+             */
+            FolderSyncPageMessage.prototype.context = "";
+
+            /**
+             * FolderSyncPageMessage pageIndex.
+             * @member {number} pageIndex
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @instance
+             */
+            FolderSyncPageMessage.prototype.pageIndex = 0;
+
+            /**
+             * FolderSyncPageMessage pageSize.
+             * @member {number} pageSize
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @instance
+             */
+            FolderSyncPageMessage.prototype.pageSize = 0;
+
+            /**
+             * FolderSyncPageMessage totalCount.
+             * @member {number} totalCount
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @instance
+             */
+            FolderSyncPageMessage.prototype.totalCount = 0;
+
+            /**
+             * FolderSyncPageMessage isLast.
+             * @member {boolean} isLast
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @instance
+             */
+            FolderSyncPageMessage.prototype.isLast = false;
+
+            /**
+             * Creates a new FolderSyncPageMessage instance using the specified properties.
+             * @function create
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {proto.v1.FolderSyncPageMessage.$Properties=} [properties] Properties to set
+             * @returns {proto.v1.FolderSyncPageMessage} FolderSyncPageMessage instance
+             * @type {{
+             *   (properties: proto.v1.FolderSyncPageMessage.$Shape): proto.v1.FolderSyncPageMessage & proto.v1.FolderSyncPageMessage.$Shape;
+             *   (properties?: proto.v1.FolderSyncPageMessage.$Properties): proto.v1.FolderSyncPageMessage;
+             * }}
+             */
+            FolderSyncPageMessage.create = function(properties) {
+                return new FolderSyncPageMessage(properties);
+            };
+
+            /**
+             * Encodes the specified FolderSyncPageMessage message. Does not implicitly {@link proto.v1.FolderSyncPageMessage.verify|verify} messages.
+             * @function encode
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {proto.v1.FolderSyncPageMessage.$Properties} message FolderSyncPageMessage message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            FolderSyncPageMessage.encode = function (message, writer, _depth) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.context);
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.pageIndex);
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pageSize);
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    writer.uint32(/* id 4, wireType 0 =*/32).int32(message.totalCount);
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    writer.uint32(/* id 5, wireType 0 =*/40).bool(message.isLast);
+                if (message.$unknowns != null && $Object.hasOwnProperty.call(message, "$unknowns"))
+                    for (let i = 0; i < message.$unknowns.length; ++i)
+                        writer.raw(message.$unknowns[i]);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified FolderSyncPageMessage message, length delimited. Does not implicitly {@link proto.v1.FolderSyncPageMessage.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {proto.v1.FolderSyncPageMessage.$Properties} message FolderSyncPageMessage message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            FolderSyncPageMessage.encodeDelimited = function(message, writer) {
+                return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+            };
+
+            /**
+             * Decodes a FolderSyncPageMessage message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.v1.FolderSyncPageMessage & proto.v1.FolderSyncPageMessage.$Shape} FolderSyncPageMessage
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            FolderSyncPageMessage.decode = function (reader, length, _end, _depth, _target) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $Reader.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let end = length === $undefined ? reader.len : reader.pos + length, message = _target || new $root.proto.v1.FolderSyncPageMessage(), value;
+                while (reader.pos < end) {
+                    let start = reader.pos;
+                    let tag = reader.tag();
+                    if (tag === _end) {
+                        _end = $undefined;
+                        break;
+                    }
+                    let wireType = tag & 7;
+                    switch (tag >>>= 3) {
+                    case 1: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.context = value;
+                            else
+                                delete message.context;
+                            continue;
+                        }
+                    case 2: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageIndex = value;
+                            else
+                                delete message.pageIndex;
+                            continue;
+                        }
+                    case 3: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageSize = value;
+                            else
+                                delete message.pageSize;
+                            continue;
+                        }
+                    case 4: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.totalCount = value;
+                            else
+                                delete message.totalCount;
+                            continue;
+                        }
+                    case 5: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.bool())
+                                message.isLast = value;
+                            else
+                                delete message.isLast;
+                            continue;
+                        }
+                    }
+                    reader.skipType(wireType, _depth, tag);
+                    if (!reader.discardUnknown) {
+                        $util.makeProp(message, "$unknowns", false);
+                        (message.$unknowns || (message.$unknowns = [])).push(reader.raw(start, reader.pos));
+                    }
+                }
+                if (_end !== $undefined)
+                    throw $Error("missing end group");
+                return message;
+            };
+
+            /**
+             * Decodes a FolderSyncPageMessage message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.v1.FolderSyncPageMessage & proto.v1.FolderSyncPageMessage.$Shape} FolderSyncPageMessage
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            FolderSyncPageMessage.decodeDelimited = function(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a FolderSyncPageMessage message.
+             * @function verify
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            FolderSyncPageMessage.verify = function (message, _depth) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    return "max depth exceeded";
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    if (!$util.isString(message.context))
+                        return "context: string expected";
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    if (!$util.isInteger(message.pageIndex))
+                        return "pageIndex: integer expected";
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    if (!$util.isInteger(message.pageSize))
+                        return "pageSize: integer expected";
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    if (!$util.isInteger(message.totalCount))
+                        return "totalCount: integer expected";
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    if (typeof message.isLast !== "boolean")
+                        return "isLast: boolean expected";
+                return null;
+            };
+
+            /**
+             * Creates a FolderSyncPageMessage message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.v1.FolderSyncPageMessage} FolderSyncPageMessage
+             */
+            FolderSyncPageMessage.fromObject = function (object, _depth) {
+                if (object instanceof $root.proto.v1.FolderSyncPageMessage)
+                    return object;
+                if (!$util.isObject(object))
+                    throw $TypeError(".proto.v1.FolderSyncPageMessage: object expected");
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let message = new $root.proto.v1.FolderSyncPageMessage();
+                if (object.context != null)
+                    if (typeof object.context !== "string" || object.context.length)
+                        message.context = $String(object.context);
+                if (object.pageIndex != null)
+                    if ($Number(object.pageIndex) !== 0)
+                        message.pageIndex = object.pageIndex | 0;
+                if (object.pageSize != null)
+                    if ($Number(object.pageSize) !== 0)
+                        message.pageSize = object.pageSize | 0;
+                if (object.totalCount != null)
+                    if ($Number(object.totalCount) !== 0)
+                        message.totalCount = object.totalCount | 0;
+                if (object.isLast != null)
+                    if (object.isLast)
+                        message.isLast = $Boolean(object.isLast);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a FolderSyncPageMessage message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {proto.v1.FolderSyncPageMessage} message FolderSyncPageMessage
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            FolderSyncPageMessage.toObject = function (message, options, _depth) {
+                if (!options)
+                    options = {};
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let object = {};
+                if (options.defaults) {
+                    object.context = "";
+                    object.pageIndex = 0;
+                    object.pageSize = 0;
+                    object.totalCount = 0;
+                    object.isLast = false;
+                }
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    object.context = message.context;
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    object.pageIndex = message.pageIndex;
+                if (message.pageSize != null && $Object.hasOwnProperty.call(message, "pageSize"))
+                    object.pageSize = message.pageSize;
+                if (message.totalCount != null && $Object.hasOwnProperty.call(message, "totalCount"))
+                    object.totalCount = message.totalCount;
+                if (message.isLast != null && $Object.hasOwnProperty.call(message, "isLast"))
+                    object.isLast = message.isLast;
+                return object;
+            };
+
+            /**
+             * Converts this FolderSyncPageMessage to JSON.
+             * @function toJSON
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            FolderSyncPageMessage.prototype.toJSON = function() {
+                return FolderSyncPageMessage.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the type url for FolderSyncPageMessage
+             * @function getTypeUrl
+             * @memberof proto.v1.FolderSyncPageMessage
+             * @static
+             * @param {string} [prefix] Custom type url prefix, defaults to `"type.googleapis.com"`
+             * @returns {string} The type url
+             */
+            FolderSyncPageMessage.getTypeUrl = function(prefix) {
+                if (prefix === $undefined)
+                    prefix = "type.googleapis.com";
+                return prefix + "/proto.v1.FolderSyncPageMessage";
+            };
+
+            return FolderSyncPageMessage;
+        })();
+
+        v1.FolderSyncPageAckRequest = (function() {
+
+            /**
+             * Properties of a FolderSyncPageAckRequest.
+             * @typedef {Object} proto.v1.FolderSyncPageAckRequest.$Properties
+             * @property {string|null} [context] FolderSyncPageAckRequest context
+             * @property {string|null} [vault] FolderSyncPageAckRequest vault
+             * @property {number|null} [pageIndex] FolderSyncPageAckRequest pageIndex
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+
+            /**
+             * Properties of a FolderSyncPageAckRequest.
+             * @memberof proto.v1
+             * @interface IFolderSyncPageAckRequest
+             * @augments proto.v1.FolderSyncPageAckRequest.$Properties
+             * @deprecated Use proto.v1.FolderSyncPageAckRequest.$Properties instead.
+             */
+
+            /**
+             * Shape of a FolderSyncPageAckRequest.
+             * @typedef {proto.v1.FolderSyncPageAckRequest.$Properties} proto.v1.FolderSyncPageAckRequest.$Shape
+             */
+
+            /**
+             * Constructs a new FolderSyncPageAckRequest.
+             * @memberof proto.v1
+             * @classdesc Represents a FolderSyncPageAckRequest.
+             * @constructor
+             * @param {proto.v1.FolderSyncPageAckRequest.$Properties=} [properties] Properties to set
+             * @property {Array.<Uint8Array>} [$unknowns] Unknown fields preserved while decoding when enabled
+             */
+            const FolderSyncPageAckRequest = function (properties) {
+                if (properties)
+                    for (let keys = $Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                            this[keys[i]] = properties[keys[i]];
+            };
+
+            /**
+             * FolderSyncPageAckRequest context.
+             * @member {string} context
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @instance
+             */
+            FolderSyncPageAckRequest.prototype.context = "";
+
+            /**
+             * FolderSyncPageAckRequest vault.
+             * @member {string} vault
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @instance
+             */
+            FolderSyncPageAckRequest.prototype.vault = "";
+
+            /**
+             * FolderSyncPageAckRequest pageIndex.
+             * @member {number} pageIndex
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @instance
+             */
+            FolderSyncPageAckRequest.prototype.pageIndex = 0;
+
+            /**
+             * Creates a new FolderSyncPageAckRequest instance using the specified properties.
+             * @function create
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {proto.v1.FolderSyncPageAckRequest.$Properties=} [properties] Properties to set
+             * @returns {proto.v1.FolderSyncPageAckRequest} FolderSyncPageAckRequest instance
+             * @type {{
+             *   (properties: proto.v1.FolderSyncPageAckRequest.$Shape): proto.v1.FolderSyncPageAckRequest & proto.v1.FolderSyncPageAckRequest.$Shape;
+             *   (properties?: proto.v1.FolderSyncPageAckRequest.$Properties): proto.v1.FolderSyncPageAckRequest;
+             * }}
+             */
+            FolderSyncPageAckRequest.create = function(properties) {
+                return new FolderSyncPageAckRequest(properties);
+            };
+
+            /**
+             * Encodes the specified FolderSyncPageAckRequest message. Does not implicitly {@link proto.v1.FolderSyncPageAckRequest.verify|verify} messages.
+             * @function encode
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {proto.v1.FolderSyncPageAckRequest.$Properties} message FolderSyncPageAckRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            FolderSyncPageAckRequest.encode = function (message, writer, _depth) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.context);
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.vault);
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pageIndex);
+                if (message.$unknowns != null && $Object.hasOwnProperty.call(message, "$unknowns"))
+                    for (let i = 0; i < message.$unknowns.length; ++i)
+                        writer.raw(message.$unknowns[i]);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified FolderSyncPageAckRequest message, length delimited. Does not implicitly {@link proto.v1.FolderSyncPageAckRequest.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {proto.v1.FolderSyncPageAckRequest.$Properties} message FolderSyncPageAckRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            FolderSyncPageAckRequest.encodeDelimited = function(message, writer) {
+                return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+            };
+
+            /**
+             * Decodes a FolderSyncPageAckRequest message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.v1.FolderSyncPageAckRequest & proto.v1.FolderSyncPageAckRequest.$Shape} FolderSyncPageAckRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            FolderSyncPageAckRequest.decode = function (reader, length, _end, _depth, _target) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $Reader.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let end = length === $undefined ? reader.len : reader.pos + length, message = _target || new $root.proto.v1.FolderSyncPageAckRequest(), value;
+                while (reader.pos < end) {
+                    let start = reader.pos;
+                    let tag = reader.tag();
+                    if (tag === _end) {
+                        _end = $undefined;
+                        break;
+                    }
+                    let wireType = tag & 7;
+                    switch (tag >>>= 3) {
+                    case 1: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.context = value;
+                            else
+                                delete message.context;
+                            continue;
+                        }
+                    case 2: {
+                            if (wireType !== 2)
+                                break;
+                            if ((value = reader.stringVerify()).length)
+                                message.vault = value;
+                            else
+                                delete message.vault;
+                            continue;
+                        }
+                    case 3: {
+                            if (wireType !== 0)
+                                break;
+                            if (value = reader.int32())
+                                message.pageIndex = value;
+                            else
+                                delete message.pageIndex;
+                            continue;
+                        }
+                    }
+                    reader.skipType(wireType, _depth, tag);
+                    if (!reader.discardUnknown) {
+                        $util.makeProp(message, "$unknowns", false);
+                        (message.$unknowns || (message.$unknowns = [])).push(reader.raw(start, reader.pos));
+                    }
+                }
+                if (_end !== $undefined)
+                    throw $Error("missing end group");
+                return message;
+            };
+
+            /**
+             * Decodes a FolderSyncPageAckRequest message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.v1.FolderSyncPageAckRequest & proto.v1.FolderSyncPageAckRequest.$Shape} FolderSyncPageAckRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            FolderSyncPageAckRequest.decodeDelimited = function(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a FolderSyncPageAckRequest message.
+             * @function verify
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            FolderSyncPageAckRequest.verify = function (message, _depth) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    return "max depth exceeded";
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    if (!$util.isString(message.context))
+                        return "context: string expected";
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    if (!$util.isString(message.vault))
+                        return "vault: string expected";
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    if (!$util.isInteger(message.pageIndex))
+                        return "pageIndex: integer expected";
+                return null;
+            };
+
+            /**
+             * Creates a FolderSyncPageAckRequest message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.v1.FolderSyncPageAckRequest} FolderSyncPageAckRequest
+             */
+            FolderSyncPageAckRequest.fromObject = function (object, _depth) {
+                if (object instanceof $root.proto.v1.FolderSyncPageAckRequest)
+                    return object;
+                if (!$util.isObject(object))
+                    throw $TypeError(".proto.v1.FolderSyncPageAckRequest: object expected");
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let message = new $root.proto.v1.FolderSyncPageAckRequest();
+                if (object.context != null)
+                    if (typeof object.context !== "string" || object.context.length)
+                        message.context = $String(object.context);
+                if (object.vault != null)
+                    if (typeof object.vault !== "string" || object.vault.length)
+                        message.vault = $String(object.vault);
+                if (object.pageIndex != null)
+                    if ($Number(object.pageIndex) !== 0)
+                        message.pageIndex = object.pageIndex | 0;
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a FolderSyncPageAckRequest message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {proto.v1.FolderSyncPageAckRequest} message FolderSyncPageAckRequest
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            FolderSyncPageAckRequest.toObject = function (message, options, _depth) {
+                if (!options)
+                    options = {};
+                if (_depth === $undefined)
+                    _depth = 0;
+                if (_depth > $util.recursionLimit)
+                    throw $Error("max depth exceeded");
+                let object = {};
+                if (options.defaults) {
+                    object.context = "";
+                    object.vault = "";
+                    object.pageIndex = 0;
+                }
+                if (message.context != null && $Object.hasOwnProperty.call(message, "context"))
+                    object.context = message.context;
+                if (message.vault != null && $Object.hasOwnProperty.call(message, "vault"))
+                    object.vault = message.vault;
+                if (message.pageIndex != null && $Object.hasOwnProperty.call(message, "pageIndex"))
+                    object.pageIndex = message.pageIndex;
+                return object;
+            };
+
+            /**
+             * Converts this FolderSyncPageAckRequest to JSON.
+             * @function toJSON
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            FolderSyncPageAckRequest.prototype.toJSON = function() {
+                return FolderSyncPageAckRequest.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the type url for FolderSyncPageAckRequest
+             * @function getTypeUrl
+             * @memberof proto.v1.FolderSyncPageAckRequest
+             * @static
+             * @param {string} [prefix] Custom type url prefix, defaults to `"type.googleapis.com"`
+             * @returns {string} The type url
+             */
+            FolderSyncPageAckRequest.getTypeUrl = function(prefix) {
+                if (prefix === $undefined)
+                    prefix = "type.googleapis.com";
+                return prefix + "/proto.v1.FolderSyncPageAckRequest";
+            };
+
+            return FolderSyncPageAckRequest;
+        })();
+
         return v1;
     })();
 

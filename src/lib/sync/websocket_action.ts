@@ -232,6 +232,26 @@ export const SettingDeleteAck: WSReceiveAction = "SettingDeleteAck";
  */
 export const SettingSyncBatchAck: WSReceiveAction = "SettingSyncBatchAck";
 
+/**
+ * FolderSyncPage folder sync page notification / 文件夹同步分页通知
+ */
+export const FolderSyncPage: WSReceiveAction = "FolderSyncPage";
+
+/**
+ * NoteSyncPage note sync page notification / 笔记同步分页通知
+ */
+export const NoteSyncPage: WSReceiveAction = "NoteSyncPage";
+
+/**
+ * FileSyncPage file sync page notification / 文件同步分页通知
+ */
+export const FileSyncPage: WSReceiveAction = "FileSyncPage";
+
+/**
+ * SettingSyncPage setting sync page notification / 配置同步分页通知
+ */
+export const SettingSyncPage: WSReceiveAction = "SettingSyncPage";
+
 // ---------------- Share ----------------
 /**
  * ShareSyncRefresh notify clients to refresh share state / 通知客户端刷新分享状态
@@ -365,6 +385,26 @@ export const SettingReceiveClear: WSSendAction = "SettingClear";
  * SettingReceiveRePush setting missing pull request / 配置缺失请求拉取
  */
 export const SettingReceiveRePush: WSSendAction = "SettingRePush";
+
+/**
+ * FolderSyncPageAck folder sync page ack / 文件夹同步分页确认
+ */
+export const FolderSyncPageAck: WSSendAction = "FolderSyncPageAck";
+
+/**
+ * NoteSyncPageAck note sync page ack / 笔记同步分页确认
+ */
+export const NoteSyncPageAck: WSSendAction = "NoteSyncPageAck";
+
+/**
+ * FileSyncPageAck file sync page ack / 文件同步分页确认
+ */
+export const FileSyncPageAck: WSSendAction = "FileSyncPageAck";
+
+/**
+ * SettingSyncPageAck setting sync page ack / 配置同步分页确认
+ */
+export const SettingSyncPageAck: WSSendAction = "SettingSyncPageAck";
 
 
 /**
