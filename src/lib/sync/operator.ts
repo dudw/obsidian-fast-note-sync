@@ -363,14 +363,10 @@ async function receiveSyncEndWrapper(data: unknown, plugin: FastSync, type: "not
     plugin.pendingNoteModifies.clear()
     plugin.localStorageManager.clearPending('pendingNoteModifies')
     // 同步结束，提交扫描阶段计算出的哈希 (Commit hashes calculated during scan)
-    for (const [path, cache] of plugin.scannedNoteHashes) {
-      const hashMap = (plugin.fileHashManager as unknown as { hashMap: Map<string, { mtime: number }> }).hashMap;
-      const existing = hashMap.get(path)
-      if (!existing || existing.mtime <= cache.mtime) {
-        plugin.fileHashManager.setFileHash(path, cache.hash, cache.mtime, cache.size)
-      }
+    if (plugin.scannedNoteHashes.size > 0) {
+      plugin.fileHashManager.bulkSetFromScanned(plugin.scannedNoteHashes);
+      plugin.scannedNoteHashes.clear();
     }
-    plugin.scannedNoteHashes.clear()
   } else if (type === "file") {
     plugin.fileHashManager.removeFileHashes(plugin.pendingDeleteFilePaths)
     plugin.pendingDeleteFilePaths.clear()
@@ -379,16 +375,12 @@ async function receiveSyncEndWrapper(data: unknown, plugin: FastSync, type: "not
     plugin.pendingUploadHashes.clear()
     plugin.localStorageManager.clearPending('pendingUploadHashes')
     // 同步结束，提交扫描阶段计算出的哈希 (Commit hashes calculated during scan)
-    for (const [path, cache] of plugin.scannedFileHashes) {
-      const hashMap = (plugin.fileHashManager as unknown as { hashMap: Map<string, { mtime: number }> }).hashMap;
-      const existing = hashMap.get(path)
-      if (!existing || existing.mtime <= cache.mtime) {
-        plugin.fileHashManager.setFileHash(path, cache.hash, cache.mtime, cache.size)
-      }
+    if (plugin.scannedFileHashes.size > 0) {
+      plugin.fileHashManager.bulkSetFromScanned(plugin.scannedFileHashes);
+      plugin.scannedFileHashes.clear();
     }
-    plugin.scannedFileHashes.clear()
   } else if (type === "folder") {
-    for (const path of plugin.pendingDeleteFolderPaths) plugin.folderSnapshotManager.removeFolder(path)
+    plugin.folderSnapshotManager.removeFolders(plugin.pendingDeleteFolderPaths);
     plugin.pendingDeleteFolderPaths.clear()
   } else if (type === "config") {
     if (plugin.configHashManager && plugin.configHashManager.isReady()) {
@@ -408,14 +400,10 @@ async function receiveSyncEndWrapper(data: unknown, plugin: FastSync, type: "not
     plugin.pendingConfigModifies.clear()
     plugin.localStorageManager.clearPending('pendingConfigModifies')
     // 同步结束，提交扫描阶段计算出的哈希 (Commit hashes calculated during scan)
-    for (const [path, cache] of plugin.scannedConfigHashes) {
-      const hashMap = (plugin.configHashManager as unknown as { hashMap: Map<string, { mtime: number }> }).hashMap;
-      const existing = hashMap.get(path)
-      if (!existing || existing.mtime <= cache.mtime) {
-        plugin.configHashManager.setFileHash(path, cache.hash, cache.mtime, cache.size)
-      }
+    if (plugin.scannedConfigHashes.size > 0) {
+      plugin.configHashManager.bulkSetFromScanned(plugin.scannedConfigHashes);
+      plugin.scannedConfigHashes.clear();
     }
-    plugin.scannedConfigHashes.clear()
   }
 
   //dddd
@@ -967,7 +955,7 @@ async function sendInBatches<T extends Record<string, unknown>>(
   items: T[],
   buildPayload: (chunk: T[], batchIndex: number, totalBatches: number) => Record<string, unknown>,
   onLastBatchAcked?: (allItems: T[]) => void,
-  chunkSize = 2000
+  chunkSize = 100
 ): Promise<void> {
   const total = items.length;
   const totalBatches = Math.max(1, Math.ceil(total / chunkSize));
@@ -1040,9 +1028,8 @@ export const handleRequestSend = async function (plugin: FastSync, syncMode: Syn
         ...(folderData.missingFolders.length > 0 ? { missingFolders: folderData.missingFolders } : {}),
       }),
       (allFolders) => {
-        for (const folder of allFolders as unknown as SnapFolder[]) {
-          plugin.folderSnapshotManager.setFolderMtime(folder.path, Date.now());
-        }
+        const paths = (allFolders as unknown as SnapFolder[]).map(f => f.path);
+        plugin.folderSnapshotManager.setFolderMtimes(paths, Date.now());
       }
     );
 
