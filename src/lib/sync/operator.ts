@@ -907,30 +907,45 @@ export const handleSync = async function (plugin: FastSync, isLoadLastTime: bool
 
 
 /**
- * 串行分批发送 WebSocket 消息的通用辅助函数
+/**
+ * 串行分批发送 WebSocket 同步消息的通用辅助函数，支持同时对主项目、删除项目和缺失项目进行分片对齐发送。
  * 对于中间批次，等待服务端返回 BatchAck 后再发送下一批；最后一批直接发出，交由原有的 SyncEnd 流程。
  *
- * Generic helper for serial batch-sending WebSocket messages.
+ * Generic helper for serial batch-sending WebSocket sync messages, aligned-slicing main, delete, and missing arrays.
  * For non-final batches, waits for server BatchAck before sending the next batch.
  * The final batch is sent directly, handled by the existing SyncEnd flow.
  */
-async function sendInBatches<T extends Record<string, unknown>>(
+async function sendSyncInBatches<T1, T2, T3>(
   plugin: FastSync,
   action: string,
   batchAckEvent: string,
-  items: T[],
-  buildPayload: (chunk: T[], batchIndex: number, totalBatches: number) => Record<string, unknown>,
-  onLastBatchAcked?: (allItems: T[]) => void,
+  context: string | undefined,
+  mainItems: T1[],
+  delItems: T2[],
+  missingItems: T3[],
+  buildPayload: (
+    mainChunk: T1[],
+    delChunk: T2[],
+    missingChunk: T3[],
+    batchIndex: number,
+    totalBatches: number
+  ) => Record<string, unknown>,
+  onLastBatchAcked?: () => void,
   syncUpChunkNum = plugin.syncState.syncUpChunkNum
 ): Promise<void> {
-  const total = items.length;
-  const totalBatches = Math.max(1, Math.ceil(total / syncUpChunkNum));
+  const maxLen = Math.max(mainItems.length, delItems.length, missingItems.length);
+  const totalBatches = Math.max(1, Math.ceil(maxLen / syncUpChunkNum));
 
   for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
     const start = batchIndex * syncUpChunkNum;
-    const chunk = total > 0 ? items.slice(start, start + syncUpChunkNum) : [];
+    const end = start + syncUpChunkNum;
+
+    const mainChunk = mainItems.slice(start, end);
+    const delChunk = delItems.slice(start, end);
+    const missingChunk = missingItems.slice(start, end);
+
     const isLast = batchIndex === totalBatches - 1;
-    const payload = buildPayload(chunk, batchIndex, totalBatches);
+    const payload = buildPayload(mainChunk, delChunk, missingChunk, batchIndex, totalBatches);
 
     if (!isLast) {
       // 非最后批：发送并阻塞等待服务端 BatchAck，超时则抛出异常
@@ -938,7 +953,7 @@ async function sendInBatches<T extends Record<string, unknown>>(
       await new Promise<void>((resolve, reject) => {
         const ackHandler = (data: unknown) => {
           const d = data as { context?: string; batchIndex?: number };
-          if (d.context === payload.context && d.batchIndex === batchIndex) {
+          if (d.context === context && d.batchIndex === batchIndex) {
             plugin.websocket.off(batchAckEvent, ackHandler);
             resolve();
           }
@@ -955,7 +970,7 @@ async function sendInBatches<T extends Record<string, unknown>>(
       // 最后批：发送后调用回调，交由原有 SyncEnd 流程完成
       // Final batch: send then invoke callback; existing SyncEnd flow handles completion
       plugin.websocket.SendMessage(action, payload, undefined, () => {
-        onLastBatchAcked?.(items);
+        onLastBatchAcked?.();
       });
     }
   }
@@ -976,25 +991,26 @@ export const handleRequestSend = async function (plugin: FastSync, syncMode: Syn
     // 第一步：先分批发送 FolderSync，确保文件夹结构先于笔记/附件在本地建立
     // Step 1: Batch-send FolderSync first to ensure folder structure is created before notes/files
     dump(`[Sync] Starting batch send: ${folderData.folders.length} folders, ${noteData.notes.length} notes, ${fileData.files.length} files`);
-    await sendInBatches(
+    await sendSyncInBatches(
       plugin,
       "FolderSync",
       "FolderSyncBatchAck",
-      folderData.folders as unknown as Record<string, unknown>[],
-      (chunk, batchIndex, totalBatches) => ({
+      folderData.context,
+      folderData.folders,
+      plugin.settings.offlineDeleteSyncEnabled ? folderData.delFolders : [],
+      folderData.missingFolders,
+      (mainChunk, delChunk, missingChunk, batchIndex, totalBatches) => ({
         vault: plugin.settings.vault,
         lastTime: folderData.lastTime,
-        folders: chunk,
+        folders: mainChunk,
         context: folderData.context,
         batchIndex,
         totalBatches,
-        // 每批都携带删除/缺失列表，服务端取最后一批的值（覆盖写），防止最后一批重传时丢失
-        // Carry del/missing in every batch; server overwrites with last batch's value to survive retransmission
-        ...(plugin.settings.offlineDeleteSyncEnabled ? { delFolders: folderData.delFolders } : {}),
-        ...(folderData.missingFolders.length > 0 ? { missingFolders: folderData.missingFolders } : {}),
+        ...(plugin.settings.offlineDeleteSyncEnabled ? { delFolders: delChunk } : {}),
+        ...(missingChunk.length > 0 ? { missingFolders: missingChunk } : {}),
       }),
-      (allFolders) => {
-        const paths = (allFolders as unknown as SnapFolder[]).map(f => f.path);
+      () => {
+        const paths = folderData.folders.map(f => f.path);
         plugin.folderSnapshotManager.setFolderMtimes(paths, Date.now());
       }
     );
@@ -1023,23 +1039,26 @@ export const handleRequestSend = async function (plugin: FastSync, syncMode: Syn
 
     // 第三步：分批发送 NoteSync
     // Step 3: Batch-send NoteSync
-    await sendInBatches(
+    await sendSyncInBatches(
       plugin,
       "NoteSync",
       "NoteSyncBatchAck",
-      noteData.notes as unknown as Record<string, unknown>[],
-      (chunk, batchIndex, totalBatches) => ({
+      noteData.context,
+      noteData.notes,
+      plugin.settings.offlineDeleteSyncEnabled ? noteData.delNotes : [],
+      noteData.missingNotes,
+      (mainChunk, delChunk, missingChunk, batchIndex, totalBatches) => ({
         vault: plugin.settings.vault,
         lastTime: noteData.lastTime,
-        notes: chunk,
+        notes: mainChunk,
         context: noteData.context,
         batchIndex,
         totalBatches,
-        ...(plugin.settings.offlineDeleteSyncEnabled ? { delNotes: noteData.delNotes } : {}),
-        ...(noteData.missingNotes.length > 0 ? { missingNotes: noteData.missingNotes } : {}),
+        ...(plugin.settings.offlineDeleteSyncEnabled ? { delNotes: delChunk } : {}),
+        ...(missingChunk.length > 0 ? { missingNotes: missingChunk } : {}),
       }),
-      (allNotes) => {
-        for (const note of allNotes as unknown as SnapFile[]) {
+      () => {
+        for (const note of noteData.notes) {
           plugin.pendingNoteModifies.set(note.path, note.contentHash as string);
         }
         plugin.localStorageManager.savePending('pendingNoteModifies', plugin.pendingNoteModifies);
@@ -1049,20 +1068,23 @@ export const handleRequestSend = async function (plugin: FastSync, syncMode: Syn
     // 第四步：分批发送 FileSync（云预览模式且未开启类型限制时跳过）
     // Step 4: Batch-send FileSync (skip when cloud-preview is on without type restriction)
     if (!plugin.settings.cloudPreviewEnabled || plugin.settings.cloudPreviewTypeRestricted) {
-      await sendInBatches(
+      await sendSyncInBatches(
         plugin,
         "FileSync",
         "FileSyncBatchAck",
-        fileData.files as unknown as Record<string, unknown>[],
-        (chunk, batchIndex, totalBatches) => ({
+        fileData.context,
+        fileData.files,
+        plugin.settings.offlineDeleteSyncEnabled ? fileData.delFiles : [],
+        fileData.missingFiles,
+        (mainChunk, delChunk, missingChunk, batchIndex, totalBatches) => ({
           vault: plugin.settings.vault,
           lastTime: fileData.lastTime,
-          files: chunk,
+          files: mainChunk,
           context: fileData.context,
           batchIndex,
           totalBatches,
-          ...(plugin.settings.offlineDeleteSyncEnabled ? { delFiles: fileData.delFiles } : {}),
-          ...(fileData.missingFiles.length > 0 ? { missingFiles: fileData.missingFiles } : {}),
+          ...(plugin.settings.offlineDeleteSyncEnabled ? { delFiles: delChunk } : {}),
+          ...(missingChunk.length > 0 ? { missingFiles: missingChunk } : {}),
         })
       );
     }
@@ -1082,24 +1104,27 @@ export const handleRequestSend = async function (plugin: FastSync, syncMode: Syn
     // 注意：客户端发送字段名为 settings / delSettings / missingSettings（非 configs）
     // Note: client sends field names 'settings' / 'delSettings' / 'missingSettings' (not 'configs')
     const isCover = Number(plugin.localStorageManager.getMetadata("lastConfigSyncTime")) === 0;
-    await sendInBatches(
+    await sendSyncInBatches(
       plugin,
       "SettingSync",
       "SettingSyncBatchAck",
-      configData.configs as unknown as Record<string, unknown>[],
-      (chunk, batchIndex, totalBatches) => ({
+      configData.context,
+      configData.configs,
+      plugin.settings.offlineDeleteSyncEnabled ? configData.delConfigs : [],
+      configData.missingConfigs,
+      (mainChunk, delChunk, missingChunk, batchIndex, totalBatches) => ({
         vault: plugin.settings.vault,
         lastTime: configData.lastTime,
-        settings: chunk,
+        settings: mainChunk,
         cover: isCover,
         context: configData.context,
         batchIndex,
         totalBatches,
-        ...(plugin.settings.offlineDeleteSyncEnabled ? { delSettings: configData.delConfigs } : {}),
-        ...(configData.missingConfigs.length > 0 ? { missingSettings: configData.missingConfigs } : {}),
+        ...(plugin.settings.offlineDeleteSyncEnabled ? { delSettings: delChunk } : {}),
+        ...(missingChunk.length > 0 ? { missingSettings: missingChunk } : {}),
       }),
-      (allConfigs) => {
-        for (const config of allConfigs as unknown as SnapFile[]) {
+      () => {
+        for (const config of configData.configs) {
           plugin.pendingConfigModifies.set(config.path, config.contentHash as string);
         }
         plugin.localStorageManager.savePending('pendingConfigModifies', plugin.pendingConfigModifies);
