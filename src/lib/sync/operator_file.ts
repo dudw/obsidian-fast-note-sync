@@ -75,6 +75,7 @@ const cleanupFileDownloadSession = async (plugin: FastSync, session: FileDownloa
   releaseSessionMemory(session)
   plugin.fileDownloadSessions.delete(session.sessionId)
   if (session.tempDir) await clearTempChunksDir(plugin, session.sessionId)
+  plugin.fileSyncTasks.completed++
 }
 
 const failFileDownloadSession = async (plugin: FastSync, session: FileDownloadSession, message: string, releaseSlot = true) => {
@@ -740,8 +741,6 @@ export const receiveFileSyncUpdate = async function (data: ReceiveFileSyncUpdate
     if (data.lastTime && data.lastTime > Number(plugin.localStorageManager.getMetadata("lastFileSyncTime"))) {
       plugin.localStorageManager.setMetadata("lastFileSyncTime", data.lastTime)
     }
-
-    plugin.fileSyncTasks.completed++
   } catch (e) {
     plugin.concurrencyLimiter.releaseSlot(slotKey)
     throw e;
@@ -1321,6 +1320,7 @@ const handleFileChunkDownloadComplete = async function (session: FileDownloadSes
     if (session.tempDir) await clearTempChunksDir(plugin, session.sessionId)
     plugin.downloadedFilesCount++
     plugin.progressTracker.recordDownloadComplete('file');
+    plugin.fileSyncTasks.completed++
   } catch (e) {
     dumpError(`Error completing file download for ${session.path}`, e)
     if (!checkAndNotifyCaseConflict(e, session.path, plugin, 'FileDownload')) {
