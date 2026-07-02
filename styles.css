@@ -84,6 +84,7 @@
   color: var(--interactive-accent);
 }
 
+/* stylelint-disable declaration-no-important */
 /* 同步互斥时的禁用菜单项 / Disabled menu item during mutually exclusive sync */
 .fns-menu-item-disabled {
   opacity: 0.45;
@@ -91,6 +92,7 @@
   pointer-events: auto !important; /* 保留点击事件以便进行 Notice 提示 / Keep click events for Notice prompt */
 }
 
+/* stylelint-enable declaration-no-important */
 /* 设置页同步指示器预览 / Settings page sync indicator preview */
 .fns-sync-indicator-preview {
   display: inline-flex;
@@ -2779,6 +2781,10 @@ body .suggestion-container {
 
 /* Status Bar & Ribbon */
 .fns-status-bar-check {
+  display: flex;
+}
+
+.fns-status-bar-check.fns-hidden {
   display: none;
 }
 

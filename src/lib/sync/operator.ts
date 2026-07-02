@@ -67,7 +67,7 @@ export function checkSyncCompletion(plugin: FastSync, intervalId?: number, syncS
     plugin.uploadedChunksCount = 0;
     plugin.progressTracker.forceComplete();
     plugin.updateStatusBar($("ui.status.completed"));
-    window.setTimeout(() => plugin.updateStatusBar(""), 3000);
+    window.setTimeout(() => plugin.updateStatusBar(""), 10000);
     return;
   }
 
@@ -170,7 +170,7 @@ export function checkSyncCompletion(plugin: FastSync, intervalId?: number, syncS
     // Refresh share indicator state after sync completion
     void plugin.shareIndicatorManager?.syncWithServer();
 
-    window.setTimeout(() => plugin.updateStatusBar(""), 3000);
+    window.setTimeout(() => plugin.updateStatusBar(""), 10000);
   } else {
     // --- 强制完成逻辑与 90% 补偿 ---
     let statusText = $("ui.status.syncing");
