@@ -1,7 +1,7 @@
 import { TFolder, TFile, normalizePath } from "obsidian";
 
 import { receiveFileUpload, receiveFileSyncUpdate, receiveFileSyncDelete, receiveFileSyncMtime, receiveFileSyncChunkDownload, receiveFileSyncEnd, checkAndUploadAttachments, receiveFileSyncRename, receiveFileRenameAck, receiveFileUploadAck, receiveFileDeleteAck, isPluginUnloading } from "./operator_file";
-import { hashContent, hashContentAsync, dump, dumpError, isPathExcluded, isFolderSyncPathExcluded, configIsPathExcluded, getConfigSyncCustomDirs, generateUUID, showSyncNotice, isLargeBinarySyncRisk, describeBinarySyncLimit, hashFileAsync, formatFileSize } from "../utils/helpers";
+import { hashContent, hashContentAsync, dump, isPathExcluded, isFolderSyncPathExcluded, configIsPathExcluded, getConfigSyncCustomDirs, generateUUID, showSyncNotice, isLargeBinarySyncRisk, describeBinarySyncLimit, hashFileAsync, formatFileSize } from "../utils/helpers";
 import { receiveConfigSyncModify, receiveConfigUpload, receiveConfigSyncMtime, receiveConfigSyncDelete, receiveConfigSyncEnd, configAllPaths, receiveConfigSyncClear, receiveConfigModifyAck, receiveConfigDeleteAck } from "./operator_config";
 import { receiveNoteSyncModify, receiveNoteUpload, receiveNoteSyncMtime, receiveNoteSyncDelete, receiveNoteSyncEnd, receiveNoteSyncRename, receiveNoteModifyAck, receiveNoteRenameAck, receiveNoteDeleteAck } from "./operator_note";
 import { SyncMode, SnapFile, SnapFolder, SyncEndData, PathHashFile, NoteSyncData, FileSyncData, ConfigSyncData, FolderSyncData } from "../utils/types";
@@ -287,9 +287,9 @@ async function receiveSyncEndWrapper(data: unknown, plugin: FastSync, type: "not
   tasks.needDelete = syncData.needDeleteCount || 0;
 
   const trueTotal = tasks.needUpload + tasks.needModify + tasks.needSyncMtime + tasks.needDelete;
-  const trackerType = type === "config" ? "setting" : type;
-  plugin.progressTracker.setDownloadTotal(trackerType as SyncType, trueTotal, plugin.syncState.syncDownChunkNum);
-  plugin.progressTracker.recordUploadComplete(trackerType as SyncType, tasks.completed);
+  const trackerType: SyncType = type === "config" ? "setting" : type;
+  plugin.progressTracker.setDownloadTotal(trackerType, trueTotal, plugin.syncState.syncDownChunkNum);
+  plugin.progressTracker.recordUploadComplete(trackerType, tasks.completed);
 
   // 1.1 注意：v1.1 协议中 End 消息不再携带 messages 列表。
   // 排除项的处理将依赖于后端是否推送相关通知。
@@ -959,7 +959,7 @@ async function sendSyncInBatches<T1, T2, T3>(
           }
         };
         plugin.websocket.on(batchAckEvent, ackHandler);
-        plugin.websocket.SendMessage(action, payload);
+        void plugin.websocket.SendMessage(action, payload);
 
         window.setTimeout(() => {
           plugin.websocket.off(batchAckEvent, ackHandler);
@@ -969,7 +969,7 @@ async function sendSyncInBatches<T1, T2, T3>(
     } else {
       // 最后批：发送后调用回调，交由原有 SyncEnd 流程完成
       // Final batch: send then invoke callback; existing SyncEnd flow handles completion
-      plugin.websocket.SendMessage(action, payload, undefined, () => {
+      void plugin.websocket.SendMessage(action, payload, undefined, () => {
         onLastBatchAcked?.();
       });
     }
@@ -1059,7 +1059,7 @@ export const handleRequestSend = async function (plugin: FastSync, syncMode: Syn
       }),
       () => {
         for (const note of noteData.notes) {
-          plugin.pendingNoteModifies.set(note.path, note.contentHash as string);
+          plugin.pendingNoteModifies.set(note.path, note.contentHash);
         }
         plugin.localStorageManager.savePending('pendingNoteModifies', plugin.pendingNoteModifies);
       }
@@ -1125,7 +1125,7 @@ export const handleRequestSend = async function (plugin: FastSync, syncMode: Syn
       }),
       () => {
         for (const config of configData.configs) {
-          plugin.pendingConfigModifies.set(config.path, config.contentHash as string);
+          plugin.pendingConfigModifies.set(config.path, config.contentHash);
         }
         plugin.localStorageManager.savePending('pendingConfigModifies', plugin.pendingConfigModifies);
       }

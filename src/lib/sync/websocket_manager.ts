@@ -336,7 +336,7 @@ export class WebSocketManager {
       const handler = receiveOperators.get(msgAction);
       if (handler) {
         const payload = (typeof data.data === 'object' && data.data !== null && data.context)
-          ? { ...(data.data as Record<string, unknown>), context: data.context }
+          ? { ...data.data, context: data.context }
           : data.data;
         void handler(payload, this.plugin);
         this.client.notifyActivity();

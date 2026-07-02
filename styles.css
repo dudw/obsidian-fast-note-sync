@@ -111,6 +111,10 @@
   color: #4caf50;
 }
 
+.fns-modal-pre-wrap {
+  white-space: pre-wrap;
+}
+
 .fast-note-sync-settings-tag {
   border-top: none;
   padding: 0;
