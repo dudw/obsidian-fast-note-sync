@@ -366,18 +366,15 @@ async function receiveSyncEndWrapper(data: unknown, plugin: FastSync, type: "not
     plugin.folderSyncEnd = true;
   }
 
-  // 4. 如果所有活跃类型的客户端上传均已就绪（进入 download 推送阶段），批量触发首拉 Ack 信号
-  if (plugin.progressTracker.getPhase() === "download") {
-    for (const t of plugin.progressTracker.getActiveTypes()) {
-      const taskTotal = plugin.progressTracker.getTypeTaskTotal(t);
-      if (taskTotal > 0 && !plugin.progressTracker.isInitialAckSent(t)) {
-        dump(`[Sync] Triggering initial ACK for type: ${t}, total tasks: ${taskTotal}`);
-        plugin.progressTracker.setInitialAckSent(t, true);
-        plugin.sendSyncPageAck(t, -1);
-      } else {
-        dump(`[Sync] Skipping initial ACK for type: ${t} because total tasks is 0 or initial ACK already sent`);
-      }
-    }
+  // 4. 针对已就绪的本模块，如果存在服务端待下载任务，且尚未发送过首拉，则立即触发首拉 Ack 信号
+  // 4. For the ready module, if there are pending tasks to download and initial ACK is not sent, trigger it immediately
+  const taskTotal = plugin.progressTracker.getTypeTaskTotal(trackerType);
+  if (taskTotal > 0 && !plugin.progressTracker.isInitialAckSent(trackerType)) {
+    dump(`[Sync] Triggering initial ACK for type: ${trackerType}, total tasks: ${taskTotal}`);
+    plugin.progressTracker.setInitialAckSent(trackerType, true);
+    plugin.sendSyncPageAck(trackerType, -1);
+  } else {
+    dump(`[Sync] Skipping initial ACK for type: ${trackerType} because total tasks is 0 or initial ACK already sent`);
   }
 }
 
