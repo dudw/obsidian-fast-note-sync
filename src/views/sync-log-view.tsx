@@ -226,6 +226,12 @@ interface SyncProgressState {
     visible: boolean;
 }
 
+interface SyncProgressPayload {
+    pct: number;
+    detail: string;
+    phase: SyncProgressState['phase'];
+}
+
 const SyncProgressBanner = ({ plugin }: { plugin: FastSync }) => {
     const [progress, setProgress] = React.useState<SyncProgressState>({
         pct: 0, detail: '', phase: 'idle', visible: false
@@ -234,7 +240,7 @@ const SyncProgressBanner = ({ plugin }: { plugin: FastSync }) => {
     React.useEffect(() => {
         let hideTimer: number | null = null;
 
-        const handler = (data: { pct: number; detail: string; phase: SyncProgressState['phase'] }) => {
+        const handler = (data: SyncProgressPayload) => {
             if (hideTimer) window.clearTimeout(hideTimer);
             setProgress({ ...data, visible: true });
 
@@ -246,13 +252,13 @@ const SyncProgressBanner = ({ plugin }: { plugin: FastSync }) => {
             }
         };
 
-        (plugin.app.workspace as unknown as { on: (name: string, cb: (data: unknown) => void) => void })
-            .on('fns:sync-progress', handler as (data: unknown) => void);
+        (plugin.app.workspace as unknown as { on: (name: string, cb: (data: SyncProgressPayload) => void) => void })
+            .on('fns:sync-progress', handler);
 
         return () => {
             if (hideTimer) window.clearTimeout(hideTimer);
-            (plugin.app.workspace as unknown as { off: (name: string, cb: (data: unknown) => void) => void })
-                .off('fns:sync-progress', handler as (data: unknown) => void);
+            (plugin.app.workspace as unknown as { off: (name: string, cb: (data: SyncProgressPayload) => void) => void })
+                .off('fns:sync-progress', handler);
         };
     }, [plugin]);
 
