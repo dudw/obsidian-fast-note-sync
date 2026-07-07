@@ -796,9 +796,19 @@ export default class FastSync extends Plugin {
     };
 
     // 将敏感/环境特定设置存入 LocalStorage
-    await saveApiToken(this.app, this, apiToken || "");
-    await saveApiUrl(this.app, this, api || "");
-    await saveVault(this.app, this, vault || "");
+    // 绝不用内存里的空值覆盖已存好的连接配置。saveSettings 会被 onExternalSettingsChange
+    // 及每一次无关开关（saveAndReloadServices）触发，一旦此刻内存里的 token/api/vault 因偶发读空而为空，
+    // 就会把 LocalStorage 里好好的值清掉——这是手机端「配好、用一阵、同步设置全丢」的根因之一。
+    // 上限：因此「把已设置的 token/api 改回空」不再通过普通保存生效；重置按钮走独立的备份/恢复流程，不受影响。
+    if (apiToken || !this.localStorageManager.getMetadata("apiToken")) {
+      await saveApiToken(this.app, this, apiToken || "");
+    }
+    if (api || !this.localStorageManager.getMetadata("apiUrl")) {
+      await saveApiUrl(this.app, this, api || "");
+    }
+    if (vault || !this.localStorageManager.getMetadata("vault")) {
+      await saveVault(this.app, this, vault || "");
+    }
     await saveAutoRedirect(this.app, this, autoRedirectEnabled || false);
     await saveWsPreProbe(this.app, this, wsPreProbeEnabled !== false);
 
