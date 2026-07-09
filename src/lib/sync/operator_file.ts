@@ -956,13 +956,21 @@ export const receiveFileSyncChunkDownload = async function (data: FileSyncChunkD
   }
 
   // 确保临时目录存在 (Ensure temp directory exists)
+  // 并发下多个下载会话可能同时 mkdir 同一目录而抛错：catch 后复验是否已存在（并发创建属正常，吞掉）；
+  // 真正未创建成功则不在此处兜底，交给首个分片写入时的既有失败路径处理（handleFileChunkDownload 的内存 fallback / failFileDownloadSession）
   if (data.totalChunks > 0 && session.tempDir) {
     const baseDir = getTempChunksDir(plugin)
-    if (!(await plugin.app.vault.adapter.exists(baseDir))) {
-      await plugin.app.vault.adapter.mkdir(baseDir)
-    }
-    if (!(await plugin.app.vault.adapter.exists(session.tempDir))) {
-      await plugin.app.vault.adapter.mkdir(session.tempDir)
+    try {
+      if (!(await plugin.app.vault.adapter.exists(baseDir))) {
+        await plugin.app.vault.adapter.mkdir(baseDir)
+      }
+      if (!(await plugin.app.vault.adapter.exists(session.tempDir))) {
+        await plugin.app.vault.adapter.mkdir(session.tempDir)
+      }
+    } catch (e) {
+      if (!(await plugin.app.vault.adapter.exists(session.tempDir))) {
+        dumpError(`Temp dir creation failed for session ${session.sessionId}, will retry on first chunk`, e)
+      }
     }
   }
 
@@ -1100,10 +1108,18 @@ export const handleFileChunkDownload = async function (buf: ArrayBuffer | Blob, 
       try {
         if (!(await plugin.app.vault.adapter.exists(session.tempDir))) {
           const baseDir = getTempChunksDir(plugin)
-          if (!(await plugin.app.vault.adapter.exists(baseDir))) {
-            await plugin.app.vault.adapter.mkdir(baseDir)
+          try {
+            if (!(await plugin.app.vault.adapter.exists(baseDir))) {
+              await plugin.app.vault.adapter.mkdir(baseDir)
+            }
+            await plugin.app.vault.adapter.mkdir(session.tempDir)
+          } catch (mkdirErr) {
+            // 并发下多个分片会话可能同时 mkdir 同一目录：复验已存在则吞掉；
+            // 仍不存在说明是真实创建失败，交给外层 catch 走既有失败路径（内存 fallback / failFileDownloadSession）
+            if (!(await plugin.app.vault.adapter.exists(session.tempDir))) {
+              throw mkdirErr
+            }
           }
-          await plugin.app.vault.adapter.mkdir(session.tempDir)
         }
         const chunkPath = normalizePath(`${session.tempDir}/${chunkIndex}.bin`)
         isNewChunk = !session.downloadedChunks?.has(chunkIndex)
