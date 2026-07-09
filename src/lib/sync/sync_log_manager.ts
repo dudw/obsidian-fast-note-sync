@@ -29,6 +29,28 @@ interface SyncSummaryStats {
     config?: { upload: number; modify: number; delete: number };
 }
 
+// 高频数据流消息：大库同步时每同步一个笔记/文件/配置/文件夹就会触发一次，量级与库大小成正比。
+// notify() 已有 100ms 节流兜底（doNotify 内 getLogs() 的 O(n) 拷贝已被限流到最多 10 次/秒），
+// 但 persistToFile() 是无节流的异步磁盘 append——每条新日志只要不是 pending 状态就立即写一次盘，
+// 大库全量同步时会变成成千上万次磁盘 I/O。这些高频消息在"成功"路径下跳过磁盘持久化，
+// 仍然写入内存 Map（日志面板打开时能看到），错误/冲突/pending 状态不受影响、照常持久化。
+// High-frequency data-stream messages: fired once per synced note/file/config/folder during a
+// large-vault sync, scaling with vault size. notify() already has a 100ms throttle (doNotify's
+// O(n) getLogs() copy is capped to ~10 calls/sec), but persistToFile() is unthrottled async disk
+// I/O — every new non-pending log writes to disk immediately, which becomes thousands of writes
+// on a large full sync. These high-frequency messages skip disk persistence on the success path,
+// but are still recorded into the in-memory Map (visible if the log panel is open); error/conflict/
+// pending states are unaffected and still persist as before.
+const HIGH_FREQUENCY_RECEIVE_ACTIONS = new Set([
+    "NoteSyncModify", "NoteSyncMtime", "NoteSyncDelete", "NoteSyncRename",
+    "NoteModifyAck", "NoteRenameAck", "NoteDeleteAck",
+    "FileSyncDelete", "FileSyncMtime", "FileSyncRename",
+    "FileUploadAck", "FileRenameAck", "FileDeleteAck",
+    "SettingSyncModify", "SettingSyncMtime", "SettingSyncDelete",
+    "SettingModifyAck", "SettingDeleteAck",
+    "FolderSyncModify", "FolderSyncDelete", "FolderSyncRename",
+]);
+
 export class SyncLogManager {
     private static instance: SyncLogManager;
     // 底层改为 Map<id, SyncLog>，保序用 Map 天然的插入序，upsert 变为 O(1)（原 findIndex 为 O(n)）
@@ -66,7 +88,7 @@ export class SyncLogManager {
         return 'other';
     }
 
-    public addOrUpdateLog(log: Partial<SyncLog> & { id: string, action: string, type: LogType }) {
+    public addOrUpdateLog(log: Partial<SyncLog> & { id: string, action: string, type: LogType }, opts?: { skipPersist?: boolean }) {
         const existingLog = this.logs.get(log.id);
         const category = this.getCategory(log.action);
 
@@ -102,7 +124,7 @@ export class SyncLogManager {
             this.logs.set(log.id, updatedLog);
 
             // 仅在状态从 pending 变为 success/error 时记录到文件，避免进度更新刷屏
-            if (statusChanged && targetStatus !== 'pending') {
+            if (statusChanged && targetStatus !== 'pending' && !opts?.skipPersist) {
                 void this.persistToFile(updatedLog);
             }
         } else {
@@ -129,14 +151,14 @@ export class SyncLogManager {
             }
 
             // 新增记录时持久化到文件（除非是 pending 状态的进度条开头，这种通常之后会有 success）
-            if (newLog.status !== 'pending') {
+            if (newLog.status !== 'pending' && !opts?.skipPersist) {
                 void this.persistToFile(newLog);
             }
         }
         this.notify();
     }
 
-    public addLog(type: LogType, action: string, message?: string, status: LogStatus = 'success', path?: string, vault?: string) {
+    public addLog(type: LogType, action: string, message?: string, status: LogStatus = 'success', path?: string, vault?: string, opts?: { skipPersist?: boolean }) {
         this.addOrUpdateLog({
             id: Math.random().toString(36).substring(2, 11),
             type,
@@ -146,7 +168,7 @@ export class SyncLogManager {
             path,
             vault,
             timestamp: Date.now()
-        });
+        }, opts);
     }
 
     /**
@@ -205,6 +227,10 @@ export class SyncLogManager {
                 }
             }
 
+            // 高频数据流消息的成功路径跳过磁盘持久化；错误/pending 状态不受影响，仍照常持久化
+            // Success path of high-frequency data-stream messages skips disk persistence;
+            // error/pending states are unaffected and still persist as before
+            const skipPersist = HIGH_FREQUENCY_RECEIVE_ACTIONS.has(action) && targetStatus === 'success';
             this.addOrUpdateLog({
                 id: sessionId,
                 type: 'receive',
@@ -213,12 +239,13 @@ export class SyncLogManager {
                 path: logPath,
                 vault: logVault,
                 message: msgData.message || (msgData.code !== undefined ? `Code: ${msgData.code}` : undefined)
-            });
+            }, { skipPersist });
         } else {
             // 没有 sessionId 的消息
             const status = (msgData.code !== undefined && (msgData.code === 0 || (msgData.code) > 200)) ? 'error' : 'success';
             const message = msgData.message || (msgData.code !== undefined ? `Code: ${msgData.code}` : undefined);
-            this.addLog('receive', logAction, message, status, logPath, logVault);
+            const skipPersist = HIGH_FREQUENCY_RECEIVE_ACTIONS.has(action) && status === 'success';
+            this.addLog('receive', logAction, message, status, logPath, logVault, { skipPersist });
         }
     }
 
