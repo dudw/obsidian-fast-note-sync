@@ -155,7 +155,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   updateSource: "github",
   mobileStatusDotPosition: "menu-bar",
   showUpgradeBadge: true,
-  concurrencyControlEnabled: false,
+  concurrencyControlEnabled: true,
   maxConcurrentUploads: 20,
   showConcurrencyIndicator: true,
   showSyncIndicator: false,
