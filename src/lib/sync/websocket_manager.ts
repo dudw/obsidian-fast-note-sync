@@ -123,6 +123,10 @@ export class WebSocketManager {
         // Always include protocol=protobuf regardless of settings
         // 无论设置如何，始终包含 protocol=protobuf 参数
         const useProtoParam = "&protocol=protobuf";
+        // pv=2：声明客户端支持 v2 握手协商（auth 响应携带协商块、窗口流水线、pb 提前升级）
+        // pb=1/0：客户端本地 protobufEnabled 设置，供服务端判定是否提前升级 pb（设计稿 §2.2）
+        const isProtobufEnabled = this.plugin.settings.protobufEnabled !== false;
+        const negotiationParams = "&pv=2&pb=" + (isProtobufEnabled ? "1" : "0");
         return addRandomParam(
           this.plugin.runWsApi +
           "/api/user/sync?lang=" +
@@ -135,7 +139,8 @@ export class WebSocketManager {
           clientName +
           "&clientVersion=" +
           clientVersion +
-          useProtoParam
+          useProtoParam +
+          negotiationParams
         );
       },
       preConnectProbe: async () => {
@@ -281,6 +286,44 @@ export class WebSocketManager {
           this.plugin.localStorageManager.setMetadata("serverVersion", serverVersion);
           this.plugin.localStorageManager.setMetadata("serverChangelog", serverChangelog);
         }
+
+        // 握手合并（设计稿 §5.2）：pv>=2 的服务端在 auth 响应追加协商块，此处必须在 StartHandle() 之前
+        // 写入 syncState，因为 sendSyncInBatches 的窗口大小/chunkNum 默认取 syncState 当前值。
+        // 旧服务端（无协商块）：所有协商字段保持 sync_state.ts 的默认值（negotiated=false, window=0），
+        // 即现状 stop-and-wait，行为零变化。
+        // Handshake merge (design §5.2): a pv>=2 server appends a negotiation block to the auth
+        // response. This MUST be written to syncState before StartHandle() is invoked below, since
+        // sendSyncInBatches reads window size/chunkNum defaults from syncState at call time.
+        // Old server (no negotiation block): all fields stay at sync_state.ts defaults
+        // (negotiated=false, window=0) — current stop-and-wait behavior, unchanged.
+        if (data.data) {
+          const nego = data.data as Record<string, unknown>;
+          let negotiated = false;
+          if (typeof nego.syncUpChunkNum === "number") {
+            this.plugin.syncState.syncUpChunkNum = nego.syncUpChunkNum;
+            negotiated = true;
+          }
+          if (typeof nego.syncDownChunkNum === "number") {
+            this.plugin.syncState.syncDownChunkNum = nego.syncDownChunkNum;
+            negotiated = true;
+          }
+          if (typeof nego.pipelineWindowUp === "number") {
+            this.plugin.syncState.pipelineWindowUp = nego.pipelineWindowUp;
+            negotiated = true;
+          }
+          if (typeof nego.pipelineWindowDown === "number") {
+            this.plugin.syncState.pipelineWindowDown = nego.pipelineWindowDown;
+            negotiated = true;
+          }
+          this.plugin.syncState.negotiated = negotiated;
+          // protobufAck===true：服务端已在 auth 响应后提前 setUseProtobuf，本连接后续下行帧即为 pb，
+          // 客户端同步跟进，无需再等 ClientInfo 响应触发升级（websocket_client.ts:259 该触发仍保留作旧服务端路径）
+          if (nego.protobufAck === true && this.plugin.settings.protobufEnabled !== false) {
+            this.client.useProtobuf = true;
+            dump("WS Client upgraded to Protobuf via auth negotiation (pv2)");
+          }
+        }
+
         dump("Service authorization success");
         this.client.notifyStatusChange(true);
 
@@ -382,6 +425,18 @@ export class WebSocketManager {
   public async StartHandle() {
     const handleId = ++this.currentStartHandleId;
     dump(`Service start handle, id: ${handleId}`);
+
+    // 验收断言（设计稿 §5.2 第 2 点）：协商写入必须先于 StartHandle 调用完成——
+    // 要么本连接已完成 pv2 协商（negotiated=true），要么服务端是不支持协商的 v1（协商字段维持默认值，
+    // 后续走 stop-and-wait）。这里只做非阻断式告警，禁止把 handleStructuredMessage 里的协商写入移到
+    // StartHandle() 调用之后。
+    // Acceptance assertion (design §5.2 point 2): negotiation write-back must complete before
+    // StartHandle is invoked — either this connection completed pv2 negotiation, or the server is a
+    // pre-negotiation v1 (fields stay at defaults, falls back to stop-and-wait). Non-blocking warn
+    // only; do not move the negotiation write in handleStructuredMessage to after this call.
+    if (!this.plugin.syncState.negotiated) {
+      dump(`[Negotiation] StartHandle entered without pv2 negotiation — treating server as v1 (stop-and-wait fallback)`);
+    }
 
     if (this.plugin.settings.startupDelay > 0 && !this.hasAppliedStartupDelay) {
       this.hasAppliedStartupDelay = true;

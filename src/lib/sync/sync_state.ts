@@ -25,6 +25,12 @@ export class SyncState {
   syncUpChunkNum = 100;
   /** 下载分片数量 / Download chunk size from server */
   syncDownChunkNum = 50;
+  /** 上行流水线窗口（协商值），0 = stop-and-wait（默认关闭，等 auth 协商块覆盖） / Upload pipeline window (negotiated), 0 = stop-and-wait */
+  pipelineWindowUp = 0;
+  /** 下行流水线窗口（协商值），0 = stop-and-wait（默认关闭，等 auth 协商块覆盖） / Download pipeline window (negotiated), 0 = stop-and-wait */
+  pipelineWindowDown = 0;
+  /** 本次连接是否已完成 pv2 协商（auth 响应携带协商块）/ Whether this connection completed pv2 negotiation (auth response carried a negotiation block) */
+  negotiated = false;
 
   // ─── Sync-session control flags ──────────────────────────────────────────────
   /** 是否正在执行同步流程 / Whether sync process is running */

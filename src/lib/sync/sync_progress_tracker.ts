@@ -199,7 +199,7 @@ export class SyncProgressTracker {
    * Set the authoritative total task count for download phase.
    * 一步到位地设置第三阶段（下载/处理）的权威任务总数。
    */
-  setDownloadTotal(type: SyncType, total: number, syncDownChunkNum = 100): void {
+  setDownloadTotal(type: SyncType, total: number, syncDownChunkNum = 200): void {
     const prog = this.progressMap.get(type);
     if (!prog) return;
     prog.pageTaskTotal = total;
