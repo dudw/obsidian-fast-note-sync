@@ -45,6 +45,15 @@ export class SyncProgressTracker {
   // Track if synchronization has been officially completed / 标记同步是否已正式完成
   private isForcedComplete = false;
 
+  // notify() 节流：整数百分比/阶段未变化时最多每 NOTIFY_THROTTLE_MS 触发一次，
+  // 变化时（含阶段切换）立即触发，避免每完成一个文件就刷一次状态栏 + workspace 事件
+  private readonly NOTIFY_THROTTLE_MS = 80;
+  private notifyTimer: number | null = null;
+  private notifyPending = false;
+  private lastNotifyTime = 0;
+  private lastNotifiedPct = -1;
+  private lastNotifiedPhase: SyncPhase | null = null;
+
   /**
    * Page completion callback, triggers sendSyncPageAck.
    * 页完成回调，用于触发 sendSyncPageAck，使协议与 UI 渲染解耦。
@@ -392,12 +401,45 @@ export class SyncProgressTracker {
     return parts.join(' · ');
   }
 
-  private notify(): void {
+  private fireNotify(pct: number, phase: SyncPhase): void {
+    this.lastNotifyTime = Date.now();
+    this.lastNotifiedPct = pct;
+    this.lastNotifiedPhase = phase;
+    this.notifyPending = false;
+    const detail = this.getDetailText();
     if (this.onChange) {
-      this.onChange(this.getOverallPct(), this.getDetailText(), this.getPhase());
+      this.onChange(pct, detail, phase);
     }
     if (this.onProgressChange) {
-      this.onProgressChange(this.getOverallPct(), this.getDetailText(), this.getPhase());
+      this.onProgressChange(pct, detail, phase);
+    }
+  }
+
+  private notify(): void {
+    const pct = this.getOverallPct();
+    const phase = this.getPhase();
+    const changed = pct !== this.lastNotifiedPct || phase !== this.lastNotifiedPhase;
+    const now = Date.now();
+    const elapsed = now - this.lastNotifyTime;
+
+    // 整数百分比变化或阶段切换（start/end）立即触发；否则节流合并
+    if (changed || elapsed >= this.NOTIFY_THROTTLE_MS) {
+      if (this.notifyTimer !== null) {
+        window.clearTimeout(this.notifyTimer);
+        this.notifyTimer = null;
+      }
+      this.fireNotify(pct, phase);
+      return;
+    }
+
+    this.notifyPending = true;
+    if (this.notifyTimer === null) {
+      this.notifyTimer = window.setTimeout(() => {
+        this.notifyTimer = null;
+        if (this.notifyPending) {
+          this.fireNotify(this.getOverallPct(), this.getPhase());
+        }
+      }, this.NOTIFY_THROTTLE_MS - elapsed);
     }
   }
 }
