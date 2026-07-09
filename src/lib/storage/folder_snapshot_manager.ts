@@ -3,6 +3,10 @@ import { TFolder } from "obsidian";
 import { dump, isFolderSyncPathExcluded, debounce } from "../utils/helpers";
 import type FastSync from "../../main";
 
+// 对账延迟：初始化后等待若干秒再比对，避开插件刚加载时的启动开销高峰
+// Reconciliation delay: wait a few seconds after init to avoid the plugin's startup load spike
+const RECONCILE_DELAY_MS = 5000;
+
 
 /**
  * 文件夹快照管理器
@@ -50,9 +54,76 @@ export class FolderSnapshotManager {
         const loaded = this.loadFromStorage();
         if (loaded) {
             this.isInitialized = true;
+            // 采用了持久化快照，其内容可能因外部工具改动目录而漂移（新增/删除文件夹后从未与
+            // 真实 vault 对账过）。安排一次轻量后台对账去修正，buildSnapshot 分支是刚从 vault
+            // 现状构建的，天然一致，无需对账。
+            // Adopted a persisted snapshot, which may have drifted if external tools changed
+            // folders (it's never been reconciled against the real vault). Schedule a lightweight
+            // background reconciliation to fix it; the buildSnapshot branch is freshly built from
+            // vault state and is inherently consistent, so it doesn't need reconciliation.
+            this.scheduleReconciliation();
         } else {
             await this.buildSnapshot();
             this.isInitialized = true;
+        }
+    }
+
+    /**
+     * 安排一次轻量后台对账 / Schedule a lightweight background reconciliation
+     */
+    private scheduleReconciliation(): void {
+        window.setTimeout(() => {
+            this.reconcileWithVault();
+        }, RECONCILE_DELAY_MS);
+    }
+
+    /**
+     * 比对当前 vault 的文件夹集合与快照 key 集合的差集，修正漂移：
+     * 本地新增但快照缺失的文件夹补进去，快照里有但本地已消失的文件夹删掉。
+     * 批量更新内存 Map 后走一次 flush 落盘，不逐条触发防抖写入。
+     * Diff the current vault's folder set against the snapshot's key set and correct drift:
+     * add folders present locally but missing from the snapshot, remove snapshot entries whose
+     * local folder is gone. Batches the in-memory Map update then flushes once, instead of
+     * triggering the debounced write per item.
+     */
+    private reconcileWithVault(): void {
+        try {
+            const files = this.plugin.app.vault.getAllLoadedFiles();
+            const vaultFolderPaths = new Set<string>();
+            for (const file of files) {
+                if (file instanceof TFolder) {
+                    if (file.path === "/" || isFolderSyncPathExcluded(file.path, this.plugin)) continue;
+                    vaultFolderPaths.add(file.path);
+                }
+            }
+
+            const toAdd: string[] = [];
+            for (const path of vaultFolderPaths) {
+                if (!this.snapshotMap.has(path)) toAdd.push(path);
+            }
+            const toRemove: string[] = [];
+            for (const path of this.snapshotMap.keys()) {
+                if (!vaultFolderPaths.has(path)) toRemove.push(path);
+            }
+
+            if (toAdd.length === 0 && toRemove.length === 0) {
+                dump("FolderSnapshotManager: [Reconcile] no drift detected against vault");
+                return;
+            }
+
+            const now = Date.now();
+            for (const path of toAdd) this.snapshotMap.set(path, now);
+            for (const path of toRemove) this.snapshotMap.delete(path);
+
+            dump(`FolderSnapshotManager: [Reconcile] drift corrected, added=${toAdd.length}, removed=${toRemove.length}`, { toAdd, toRemove });
+
+            // 对账是低频一次性事件，直接标脏并立即落盘一次，不必等待防抖窗口
+            // Reconciliation is a low-frequency one-off event; mark dirty and flush immediately
+            // rather than waiting for the debounce window
+            this.isDirty = true;
+            this.flush();
+        } catch (error) {
+            dump("FolderSnapshotManager: [Reconcile] failed", error);
         }
     }
 
