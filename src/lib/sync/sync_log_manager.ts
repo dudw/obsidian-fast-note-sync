@@ -31,11 +31,18 @@ interface SyncSummaryStats {
 
 export class SyncLogManager {
     private static instance: SyncLogManager;
-    private logs: SyncLog[] = [];
+    // 底层改为 Map<id, SyncLog>，保序用 Map 天然的插入序，upsert 变为 O(1)（原 findIndex 为 O(n)）
+    private logs: Map<string, SyncLog> = new Map();
     private readonly MAX_LOGS = 5000;
     private listeners: Set<(logs: SyncLog[]) => void> = new Set();
     private plugin: FastSync | null = null;
     private logFilePath: string = "";
+
+    // notify() 节流合并：高频同步消息每条都触发会导致大量 UI/工作区事件重渲染
+    private readonly NOTIFY_THROTTLE_MS = 100;
+    private lastNotifyTime = 0;
+    private notifyTimer: number | null = null;
+    private notifyPending = false;
 
     private constructor() { }
 
@@ -60,12 +67,11 @@ export class SyncLogManager {
     }
 
     public addOrUpdateLog(log: Partial<SyncLog> & { id: string, action: string, type: LogType }) {
-        const index = this.logs.findIndex(l => l.id === log.id);
+        const existingLog = this.logs.get(log.id);
         const category = this.getCategory(log.action);
 
-        if (index !== -1) {
+        if (existingLog) {
             // Update existing log - PRESERVE existing timestamp
-            const existingLog = this.logs[index];
 
             // 如果旧状态已经是成功或失败，则不允许被改回 pending
             let targetStatus = log.status || existingLog.status;
@@ -92,7 +98,8 @@ export class SyncLogManager {
 
             // --- 保持原有顺序，避免分页时由于状态更新导致记录在页面间跳变 ---
             // --- Keep original order to prevent items jumping between pages during status updates ---
-            this.logs[index] = updatedLog;
+            // Map.set 更新已存在的 key 不会改变其迭代顺序位置，天然保序
+            this.logs.set(log.id, updatedLog);
 
             // 仅在状态从 pending 变为 success/error 时记录到文件，避免进度更新刷屏
             if (statusChanged && targetStatus !== 'pending') {
@@ -112,9 +119,13 @@ export class SyncLogManager {
                 message: log.message,
                 vault: log.vault
             };
-            this.logs.unshift(newLog);
-            if (this.logs.length > this.MAX_LOGS) {
-                this.logs.pop();
+            this.logs.set(log.id, newLog);
+            if (this.logs.size > this.MAX_LOGS) {
+                // 淘汰最早插入的一条（Map 迭代序中第一个 key），对应原数组实现里 pop() 掉的最旧记录
+                const oldestKey = this.logs.keys().next().value;
+                if (oldestKey !== undefined) {
+                    this.logs.delete(oldestKey);
+                }
             }
 
             // 新增记录时持久化到文件（除非是 pending 状态的进度条开头，这种通常之后会有 success）
@@ -267,7 +278,7 @@ export class SyncLogManager {
 
 
     public async clearLogs() {
-        this.logs = [];
+        this.logs.clear();
         this.notify();
 
         // 同时清空日志文件
@@ -281,7 +292,8 @@ export class SyncLogManager {
     }
 
     public getLogs(): SyncLog[] {
-        return [...this.logs];
+        // Map 按插入序（旧→新）迭代，反转后得到与原数组实现一致的“最新在前”顺序
+        return Array.from(this.logs.values()).reverse();
     }
 
     public subscribe(listener: (logs: SyncLog[]) => void) {
@@ -290,8 +302,36 @@ export class SyncLogManager {
         return () => this.listeners.delete(listener);
     }
 
-    private notify() {
+    private doNotify() {
         this.listeners.forEach(listener => listener(this.getLogs()));
+    }
+
+    /**
+     * 节流合并通知：短时间内多次调用只会触发一次真实的监听器回调，
+     * 但保证节流窗口结束后一定会用最新状态再触发一次（trailing）
+     */
+    private notify() {
+        const now = Date.now();
+        const elapsed = now - this.lastNotifyTime;
+
+        if (elapsed >= this.NOTIFY_THROTTLE_MS) {
+            this.lastNotifyTime = now;
+            this.notifyPending = false;
+            this.doNotify();
+            return;
+        }
+
+        this.notifyPending = true;
+        if (this.notifyTimer === null) {
+            this.notifyTimer = window.setTimeout(() => {
+                this.notifyTimer = null;
+                if (this.notifyPending) {
+                    this.notifyPending = false;
+                    this.lastNotifyTime = Date.now();
+                    this.doNotify();
+                }
+            }, this.NOTIFY_THROTTLE_MS - elapsed);
+        }
     }
 
     private async persistToFile(log: SyncLog) {
