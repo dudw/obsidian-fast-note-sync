@@ -187,6 +187,39 @@ export const receiveConfigSyncModify = async function (data: ReceiveMessage, plu
             }
         }
         const filePath = normalizePath(data.path)
+
+        // Fail-safe：写盘前检查本地是否有未推送的编辑，避免服务端推送盲覆盖用户刚做的改动
+        // Fail-safe: before overwriting, check for unsynced local edits so a server push
+        // doesn't blindly clobber changes the user just made
+        const hasPendingLocalEdit = plugin.pendingConfigModifies.has(data.path)
+        let hasDivergedSinceLastSync = false
+        if (!hasPendingLocalEdit) {
+            const existingStat = await plugin.app.vault.adapter.stat(filePath)
+            if (existingStat) {
+                const knownSyncMtime = plugin.lastSyncMtime.get(data.path)
+                const localMtimeIsNewer = knownSyncMtime !== undefined && existingStat.mtime > knownSyncMtime
+                if (localMtimeIsNewer) {
+                    // mtime 已比上次同步记录的新，进一步用内容哈希确认本地内容是否真的偏离了已知基准
+                    // mtime is newer than what we last synced; confirm with content hash whether
+                    // local content actually diverged from the known baseline
+                    const knownBaseHash = plugin.configHashManager.getPathHash(data.path)
+                    let localContentHash = plugin.configHashManager.getValidHash(data.path, existingStat.mtime, existingStat.size)
+                    if (localContentHash === null) {
+                        localContentHash = await hashFileAsync(plugin.app, filePath)
+                    }
+                    hasDivergedSinceLastSync = localContentHash !== knownBaseHash
+                }
+            }
+        }
+
+        if (hasPendingLocalEdit || hasDivergedSinceLastSync) {
+            dump(`[FastSync] Skip config overwrite, local unsynced edit detected: ${filePath}`)
+            SyncLogManager.getInstance().addLog('receive', 'ConfigModifyConflict', `本地配置存在未同步的改动，跳过服务端覆盖，等待下一轮同步处理冲突: ${filePath}`, 'cancelled', data.path)
+            plugin.removeIgnoredConfigFile(data.path)
+            plugin.configSyncTasks.completed++
+            return
+        }
+
         await plugin.app.vault.adapter.write(filePath, data.content, { ...(data.ctime > 0 && { ctime: data.ctime }), ...(data.mtime > 0 && { mtime: data.mtime }) })
     } catch (e) {
         dumpError("[writeConfigFile] error:", e)

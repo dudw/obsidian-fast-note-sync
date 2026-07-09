@@ -232,6 +232,34 @@ export const receiveNoteSyncModify = async function (data: ReceiveMessage, plugi
       plugin.addIgnoredFile(normalizedPath)
       try {
         if (file) {
+          // Fail-safe：写盘前检查本地是否有未推送的编辑，避免服务端推送盲覆盖用户刚做的改动
+          // Fail-safe: before overwriting, check for unsynced local edits so a server push
+          // doesn't blindly clobber changes the user just made
+          const hasPendingLocalEdit = plugin.pendingNoteModifies.has(data.path)
+          let hasDivergedSinceLastSync = false
+          if (!hasPendingLocalEdit) {
+            const knownSyncMtime = plugin.lastSyncMtime.get(data.path)
+            const localMtimeIsNewer = knownSyncMtime !== undefined && file.stat.mtime > knownSyncMtime
+            if (localMtimeIsNewer) {
+              // mtime 已比上次同步记录的新，进一步用内容哈希确认本地内容是否真的偏离了已知基准
+              // mtime is newer than what we last synced; confirm with content hash whether
+              // local content actually diverged from the known baseline
+              const knownBaseHash = plugin.fileHashManager.getPathHash(normalizedPath)
+              let localContentHash = plugin.fileHashManager.getValidHash(normalizedPath, file.stat.mtime, file.stat.size)
+              if (localContentHash === null) {
+                const localContent = await plugin.app.vault.read(file)
+                localContentHash = await hashContentAsync(localContent)
+              }
+              hasDivergedSinceLastSync = localContentHash !== knownBaseHash
+            }
+          }
+
+          if (hasPendingLocalEdit || hasDivergedSinceLastSync) {
+            dump(`[FastSync] Skip overwrite, local unsynced edit detected: ${normalizedPath}`)
+            SyncLogManager.getInstance().addLog('receive', 'NoteModifyConflict', `本地存在未同步的改动，跳过服务端覆盖，等待下一轮同步处理冲突: ${normalizedPath}`, 'cancelled', data.path)
+            return
+          }
+
           await plugin.app.vault.modify(file, data.content, { ...(data.ctime > 0 && { ctime: data.ctime }), ...(data.mtime > 0 && { mtime: data.mtime }) })
         } else {
           const folder = normalizedPath.split("/").slice(0, -1).join("/")
