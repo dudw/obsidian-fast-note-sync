@@ -568,6 +568,25 @@ export const handleSync = async function (plugin: FastSync, isLoadLastTime: bool
       const MAX_HASH_PER_CYCLE = plugin.settings.hashSyncLimitEnabled !== false ? (plugin.settings.hashSyncLimit ?? 20000) : Infinity;
       let hashComputeCount = 0;
 
+      // --- PERF: bounded concurrency for cache-miss hash computation ---
+      // 哈希缓存未命中的文件原先完全串行 read+hash，大库首次/全量扫描时很慢；
+      // 改为有限并发（6 路）：结果 push 顺序对 notes/files 数组无影响（下游按 path 分批处理），
+      // hashComputeCount 的自增仍在主循环同步完成，MAX_HASH_PER_CYCLE 预算不受并发影响。
+      // Cache-miss read+hash used to run fully serially, which is slow on large vaults' first/full
+      // scan; switched to bounded concurrency (6-way). Result push order doesn't matter (downstream
+      // batches by path). hashComputeCount is still incremented synchronously in the main loop, so
+      // the MAX_HASH_PER_CYCLE budget is unaffected by concurrency.
+      const MAX_CONCURRENT_HASH = 6;
+      const hashInFlight = new Set<Promise<void>>();
+      const scheduleHashTask = async (task: () => Promise<void>) => {
+        let p: Promise<void>;
+        p = task().finally(() => hashInFlight.delete(p));
+        hashInFlight.add(p);
+        if (hashInFlight.size >= MAX_CONCURRENT_HASH) {
+          await Promise.race(hashInFlight);
+        }
+      };
+
       for (const file of list) {
         if (++processedCount % 20 === 0) {
           await sleep(0);
@@ -614,31 +633,44 @@ export const handleSync = async function (plugin: FastSync, isLoadLastTime: bool
               const noteLimit = (plugin.settings.noteSyncLimit ?? 20) * 1024 * 1024;
               if (file.stat.size > noteLimit) continue;
 
-              let contentHash = plugin.fileHashManager.getValidHash(file.path, file.stat.mtime, file.stat.size);
-              if (contentHash === null) {
+              const cachedNoteHash = plugin.fileHashManager.getValidHash(file.path, file.stat.mtime, file.stat.size);
+              if (cachedNoteHash !== null) {
+                const baseHash = plugin.fileHashManager.getPathHash(file.path);
+                notes.push({
+                  path: file.path,
+                  pathHash: hashContent(file.path),
+                  contentHash: cachedNoteHash,
+                  mtime: file.stat.mtime,
+                  ctime: file.stat.ctime,
+                  size: file.stat.size,
+                  ...(baseHash !== null ? { baseHash } : { baseHashMissing: true }),
+                });
+              } else {
                 if (hashComputeCount >= MAX_HASH_PER_CYCLE) continue;
                 hashComputeCount++;
-                try {
-                  contentHash = await Promise.race([
-                    hashContentAsync(await plugin.app.vault.read(file)),
-                    new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error(`Hash timeout`)), 15000))
-                  ]);
-                  plugin.scannedNoteHashes.set(file.path, { hash: contentHash, mtime: file.stat.mtime, size: file.stat.size });
-                } catch {
-                  continue;
-                }
+                const notePath = file.path, noteMtime = file.stat.mtime, noteCtime = file.stat.ctime, noteSize = file.stat.size;
+                await scheduleHashTask(async () => {
+                  try {
+                    const contentHash = await Promise.race([
+                      hashContentAsync(await plugin.app.vault.read(file)),
+                      new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error(`Hash timeout`)), 15000))
+                    ]);
+                    plugin.scannedNoteHashes.set(notePath, { hash: contentHash, mtime: noteMtime, size: noteSize });
+                    const baseHash = plugin.fileHashManager.getPathHash(notePath);
+                    notes.push({
+                      path: notePath,
+                      pathHash: hashContent(notePath),
+                      contentHash: contentHash,
+                      mtime: noteMtime,
+                      ctime: noteCtime,
+                      size: noteSize,
+                      ...(baseHash !== null ? { baseHash } : { baseHashMissing: true }),
+                    });
+                  } catch {
+                    // 哈希失败或超时，跳过该文件，不计入本轮同步 / Skip file on hash failure or timeout
+                  }
+                });
               }
-
-              const baseHash = plugin.fileHashManager.getPathHash(file.path);
-              notes.push({
-                path: file.path,
-                pathHash: hashContent(file.path),
-                contentHash: contentHash,
-                mtime: file.stat.mtime,
-                ctime: file.stat.ctime,
-                size: file.stat.size,
-                ...(baseHash !== null ? { baseHash } : { baseHashMissing: true }),
-              });
             } else {
               if (isLargeBinarySyncRisk(file.stat.size, plugin)) continue;
               const attachmentLimit = (plugin.settings.attachmentSyncLimit ?? 50) * 1024 * 1024;
@@ -651,36 +683,55 @@ export const handleSync = async function (plugin: FastSync, isLoadLastTime: bool
                 && plugin.fileHashManager.getPathHash(file.path) !== null
                 && !plugin.pendingUploadHashes.has(file.path)) continue;
 
-              let contentHash = plugin.fileHashManager.getValidHash(file.path, file.stat.mtime, file.stat.size);
-              if (contentHash === null) {
+              const cachedFileHash = plugin.fileHashManager.getValidHash(file.path, file.stat.mtime, file.stat.size);
+              if (cachedFileHash !== null) {
+                const baseHash = plugin.fileHashManager.getPathHash(file.path);
+                files.push({
+                  path: file.path,
+                  pathHash: hashContent(file.path),
+                  contentHash: cachedFileHash,
+                  mtime: file.stat.mtime,
+                  ctime: file.stat.ctime,
+                  size: file.stat.size,
+                  ...(baseHash !== null ? { baseHash } : { baseHashMissing: true }),
+                });
+              } else {
                 if (hashComputeCount >= MAX_HASH_PER_CYCLE) continue;
                 hashComputeCount++;
-                try {
-                  contentHash = await Promise.race([
-                    hashFileAsync(plugin.app, file.path),
-                    new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error(`Hash timeout`)), 15000))
-                  ]);
-                  plugin.scannedFileHashes.set(file.path, { hash: contentHash, mtime: file.stat.mtime, size: file.stat.size });
-                } catch {
-                  continue;
-                }
+                const attPath = file.path, attMtime = file.stat.mtime, attCtime = file.stat.ctime, attSize = file.stat.size;
+                await scheduleHashTask(async () => {
+                  try {
+                    const contentHash = await Promise.race([
+                      hashFileAsync(plugin.app, attPath),
+                      new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error(`Hash timeout`)), 15000))
+                    ]);
+                    plugin.scannedFileHashes.set(attPath, { hash: contentHash, mtime: attMtime, size: attSize });
+                    const baseHash = plugin.fileHashManager.getPathHash(attPath);
+                    files.push({
+                      path: attPath,
+                      pathHash: hashContent(attPath),
+                      contentHash: contentHash,
+                      mtime: attMtime,
+                      ctime: attCtime,
+                      size: attSize,
+                      ...(baseHash !== null ? { baseHash } : { baseHashMissing: true }),
+                    });
+                  } catch {
+                    // 哈希失败或超时，跳过该文件，不计入本轮同步 / Skip file on hash failure or timeout
+                  }
+                });
               }
-
-              const baseHash = plugin.fileHashManager.getPathHash(file.path);
-              files.push({
-                path: file.path,
-                pathHash: hashContent(file.path),
-                contentHash: contentHash,
-                mtime: file.stat.mtime,
-                ctime: file.stat.ctime,
-                size: file.stat.size,
-                ...(baseHash !== null ? { baseHash } : { baseHashMissing: true }),
-              });
             }
           }
         } catch {
           continue;
         }
+      }
+
+      // 等待所有并发哈希任务收尾，确保后续的落盘/统计基于完整结果
+      // Drain remaining in-flight concurrent hash tasks before persisting/reporting stats
+      if (hashInFlight.size > 0) {
+        await Promise.all(Array.from(hashInFlight));
       }
 
       // Persist any newly computed hashes (breaks the Catch-22)
