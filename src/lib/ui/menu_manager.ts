@@ -459,7 +459,7 @@ export class MenuManager {
     this.activeMenu = menu;
 
     const menuWithHide = menu as unknown as MenuWithHide;
-    const originalHide: () => void = menuWithHide.hide.bind(menuWithHide) as () => void;
+    const originalHide = menuWithHide.hide.bind(menuWithHide) as unknown as () => void;
     menuWithHide.hide = () => {
       this.activeMenu = null;
       originalHide();
