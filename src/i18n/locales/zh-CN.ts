@@ -490,6 +490,7 @@ export default {
   "ui.share_manage.cancel_confirm": "确认取消该分享？此操作不可撤销。",
   "ui.menu.sharing": "分享中（${count}）",
   "ui.menu.sharing_desc": "筛选显示分享中的笔记",
+  "ui.menu.conflicts": "笔记冲突",
   "ui.common.save": "保存",
   "ui.common.saveSuccess": "保存成功",
   "ui.common.noChange": "未做任何修改",

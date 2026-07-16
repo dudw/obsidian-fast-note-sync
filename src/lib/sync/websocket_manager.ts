@@ -597,26 +597,8 @@ export class WebSocketManager {
         dump("Failed to create conflict-notes backup files:", e);
       }
 
-      if (ConflictResolveModal.activePaths.has(path)) {
-        return;
-      }
-
       this.plugin.syncState.conflictedPaths.add(path);
       this.plugin.localStorageManager.setConflictedPaths(this.plugin.syncState.conflictedPaths);
-
-      const file = this.plugin.app.vault.getFileByPath(normalizePath(path));
-      if (file) {
-        const localContent = await this.plugin.app.vault.read(file);
-        new ConflictResolveModal(
-          this.plugin.app,
-          this.plugin,
-          file,
-          localContent,
-          serverContent,
-          baseContent || "",
-          serverHash
-        ).open();
-      }
     } else {
       if (typeof path === "string") {
         dump("Conflict detected:", { code: data.code, Path: path, message: data.message });

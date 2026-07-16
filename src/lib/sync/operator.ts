@@ -231,6 +231,14 @@ export function checkSyncCompletion(plugin: FastSync, intervalId?: number, syncS
     }
     plugin.updateStatusBar(completionText);
 
+    // 同步成功完成后，如果在此次同步中捕获到了需要手动合并解决的冲突，则在此时一并弹出冲突文件列表视图
+    if (plugin.syncState.conflictedPaths.size > 0) {
+      void (async () => {
+        const { ConflictListModal } = await import("../../views/conflict-list-modal");
+        new ConflictListModal(plugin.app, plugin).open();
+      })();
+    }
+
     if (plugin.expectedSyncCount > 0 && !plugin.localStorageManager.getMetadata("isInitSync")) {
       plugin.localStorageManager.setMetadata("isInitSync", true);
     }

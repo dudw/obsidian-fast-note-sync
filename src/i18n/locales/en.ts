@@ -490,6 +490,7 @@ export default {
   "ui.share_manage.cancel_confirm": "Confirm cancelling this share? This action cannot be undone.",
   "ui.menu.sharing": "Sharing (${count})",
   "ui.menu.sharing_desc": "Filter to show notes that are being shared",
+  "ui.menu.conflicts": "Note Conflicts",
   "ui.common.save": "Save",
   "ui.common.saveSuccess": "Saved successfully",
   "ui.common.noChange": "No changes made",
