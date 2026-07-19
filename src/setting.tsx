@@ -1284,19 +1284,22 @@ export class SettingTab extends PluginSettingTab {
       root.render(<SettingsView plugin={this.plugin} />)
     }, 50)
 
-    new Setting(set).setName($("setting.remote.api_url")).addText((text) =>
-      text
-        .setPlaceholder($("setting.remote.api_url_placeholder"))
-        .setValue(this.plugin.settings.api)
-        .onChange(async (value) => {
-          if (value != this.plugin.settings.api) {
-            this.plugin.wsSettingChange = true
-            this.plugin.settings.api = value
-            this.plugin.localStorageManager.clearSyncTime()
-            await this.plugin.saveAndReloadServices()
-          }
-        }),
-    )
+    new Setting(set)
+      .setClass("fns-setting-item-vertical")
+      .setName($("setting.remote.api_url"))
+      .addText((text) =>
+        text
+          .setPlaceholder($("setting.remote.api_url_placeholder"))
+          .setValue(this.plugin.settings.api)
+          .onChange(async (value) => {
+            if (value != this.plugin.settings.api) {
+              this.plugin.wsSettingChange = true
+              this.plugin.settings.api = value
+              this.plugin.localStorageManager.clearSyncTime()
+              await this.plugin.saveAndReloadServices()
+            }
+          }),
+      )
     this.setDescWithBreaks(set.lastElementChild as HTMLElement, $("setting.remote.api_url_desc"))
 
     if (this.plugin.settings.api && this.plugin.settings.api.toLowerCase().startsWith("http://")) {
@@ -1304,19 +1307,22 @@ export class SettingTab extends PluginSettingTab {
       warningEl.setText($("setting.remote.http_warning"));
     }
 
-    new Setting(set).setName($("setting.remote.api_token")).addText((text) =>
-      text
-        .setPlaceholder($("setting.remote.api_token_placeholder"))
-        .setValue(this.plugin.settings.apiToken)
-        .onChange(async (value) => {
-          if (value != this.plugin.settings.apiToken) {
-            this.plugin.wsSettingChange = true
-            this.plugin.settings.apiToken = value
-            this.plugin.localStorageManager.clearSyncTime()
-            await this.plugin.saveAndReloadServices()
-          }
-        }),
-    )
+    new Setting(set)
+      .setClass("fns-setting-item-vertical")
+      .setName($("setting.remote.api_token"))
+      .addText((text) =>
+        text
+          .setPlaceholder($("setting.remote.api_token_placeholder"))
+          .setValue(this.plugin.settings.apiToken)
+          .onChange(async (value) => {
+            if (value != this.plugin.settings.apiToken) {
+              this.plugin.wsSettingChange = true
+              this.plugin.settings.apiToken = value
+              this.plugin.localStorageManager.clearSyncTime()
+              await this.plugin.saveAndReloadServices()
+            }
+          }),
+      )
     this.setDescWithBreaks(set.lastElementChild as HTMLElement, $("setting.remote.api_token_desc"))
 
     const handleVaultNameChange = createVaultNameChangeHandler(this.plugin)
