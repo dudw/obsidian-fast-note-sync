@@ -804,6 +804,12 @@ export class MenuManager {
         try {
           const conflictData = JSON.parse(targetLog.message) as Record<string, unknown>;
           serverHash = typeof conflictData.serverHash === "string" ? conflictData.serverHash : "";
+          if (!serverContent && typeof conflictData.serverContent === "string") {
+            serverContent = conflictData.serverContent;
+          }
+          if (!baseContent && typeof conflictData.baseContent === "string") {
+            baseContent = conflictData.baseContent;
+          }
         } catch {
           // Ignore JSON parse error // 忽略 JSON 解析错误
         }
